@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\WorkoutSet;
 use App\Models\Workout;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class WorkoutSetController extends Controller
 {
+    use AuthorizesRequests;
+
     public function store(Request $request, Workout $workout)
     {
         $this->authorize('update', $workout);
