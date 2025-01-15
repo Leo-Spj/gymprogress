@@ -14,6 +14,8 @@ class Routine extends Model
         'name'
     ];
 
+    protected $appends = ['days'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -29,5 +31,10 @@ class Routine extends Model
     public function routineDays()
     {
         return $this->hasMany(RoutineDay::class);
+    }
+
+    public function getDaysAttribute()
+    {
+        return $this->routineDays->pluck('day_of_week')->toArray();
     }
 }

@@ -48,6 +48,17 @@ export default function Show({ auth, routine }) {
                             </div>
 
                             <div className="mb-6">
+                                <h3 className="text-lg font-medium mb-2">Días de entrenamiento</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {routine.days.map(day => (
+                                        <span key={day} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full capitalize">
+                                            {day}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="mb-6">
                                 <h3 className="text-lg font-medium mb-2">Ejercicios</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {routine.exercises.map(exercise => (

@@ -13,7 +13,9 @@ class RoutineController extends Controller
 
     public function index()
     {
-        $routines = auth()->user()->routines()->with('exercises')->get();
+        $routines = auth()->user()->routines()
+            ->with(['exercises', 'routineDays'])
+            ->get();
         return Inertia::render('Routines/Index', [
             'routines' => $routines
         ]);
@@ -35,11 +37,21 @@ class RoutineController extends Controller
             'exercises' => 'array',
         ]);
 
-        $routine = auth()->user()->routines()->create($validated);
+        $routine = auth()->user()->routines()->create([
+            'name' => $validated['name']
+        ]);
 
         if (isset($validated['exercises'])) {
             foreach ($validated['exercises'] as $index => $exerciseId) {
                 $routine->exercises()->attach($exerciseId, ['order_index' => $index + 1]);
+            }
+        }
+
+        if (isset($validated['days'])) {
+            foreach ($validated['days'] as $day) {
+                $routine->routineDays()->create([
+                    'day_of_week' => $day
+                ]);
             }
         }
 
@@ -49,7 +61,7 @@ class RoutineController extends Controller
     public function show(Routine $routine)
     {
         $this->authorize('view', $routine);
-        $routine->load('exercises');
+        $routine->load(['exercises', 'routineDays']);
         
         return Inertia::render('Routines/Show', [
             'routine' => $routine
@@ -84,13 +96,22 @@ class RoutineController extends Controller
         ]);
 
         if (isset($validated['exercises'])) {
-            // Crear un array asociativo con order_index para cada ejercicio
             $exercisesWithOrder = [];
             foreach ($validated['exercises'] as $index => $exerciseId) {
                 $exercisesWithOrder[$exerciseId] = ['order_index' => $index + 1];
             }
             
             $routine->exercises()->sync($exercisesWithOrder);
+        }
+
+        // Actualizar los días de la rutina
+        $routine->routineDays()->delete(); // Eliminar días existentes
+        if (isset($validated['days'])) {
+            foreach ($validated['days'] as $day) {
+                $routine->routineDays()->create([
+                    'day_of_week' => $day
+                ]);
+            }
         }
 
         return redirect()->route('routines.index');

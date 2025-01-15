@@ -29,6 +29,13 @@ export default function Index({ auth, routines }) {
                             <div key={routine.id} className="bg-white overflow-hidden shadow-sm rounded-lg">
                                 <div className="p-6">
                                     <h3 className="text-lg font-medium">{routine.name}</h3>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {routine.days.map(day => (
+                                            <span key={day} className="text-xs px-2 py-1 bg-gray-100 rounded-full capitalize">
+                                                {day}
+                                            </span>
+                                        ))}
+                                    </div>
                                     <p className="text-gray-600 mt-2">
                                         {routine.exercises.length} ejercicios
                                     </p>
