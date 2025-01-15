@@ -93,6 +93,7 @@ export default function Show({ auth, routine }) {
                                                 ref={provided.innerRef}
                                                 className="grid grid-cols-1 gap-4"
                                             >
+                                                                                                ...
                                                 {exercises.map((exercise, index) => (
                                                     <Draggable
                                                         key={exercise.id}
@@ -112,6 +113,13 @@ export default function Show({ auth, routine }) {
                                                                     >
                                                                         ⋮⋮
                                                                     </div>
+                                                                    {exercise.image_url && (
+                                                                        <img 
+                                                                            src={exercise.image_url} 
+                                                                            alt={exercise.name}
+                                                                            className="w-16 h-16 object-cover rounded-lg mr-4"
+                                                                        />
+                                                                    )}
                                                                     <div>
                                                                         <p className="text-gray-600">
                                                                             <span className="font-medium">Nombre:</span> {exercise.name}
@@ -119,13 +127,6 @@ export default function Show({ auth, routine }) {
                                                                         <p className="text-gray-600">
                                                                             <span className="font-medium">Tipo:</span> {exercise.type}
                                                                         </p>
-                                                                        {exercise.image_url && (
-                                                                            <img 
-                                                                                src={exercise.image_url} 
-                                                                                alt={exercise.name}
-                                                                                className="w-full max-w-lg h-auto object-cover rounded-lg mt-2"
-                                                                            />
-                                                                        )}
                                                                     </div>
                                                                 </div>
                                                                 <button
@@ -138,6 +139,7 @@ export default function Show({ auth, routine }) {
                                                         )}
                                                     </Draggable>
                                                 ))}
+                                                
                                                 {provided.placeholder}
                                             </div>
                                         )}
