@@ -3,12 +3,20 @@ import { Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Index({ auth, routines }) {
-    const { delete: destroy } = useForm();
+    const { delete: destroy, post } = useForm();
 
     const handleDelete = (id) => {
         if (confirm('¿Estás seguro de que quieres eliminar esta rutina?')) {
             destroy(route('routines.destroy', id));
         }
+    };
+
+    const handleTrain = (routineId) => {
+        post(route('workouts.store'), {
+            onSuccess: () => {
+                window.location.href = route('routines.show', routineId);
+            }
+        });
     };
 
     return (
@@ -46,6 +54,12 @@ export default function Index({ auth, routines }) {
                                         >
                                             Ver detalles
                                         </Link>
+                                        <button
+                                            onClick={() => handleTrain(routine.id)}
+                                            className="text-green-500 hover:underline"
+                                        >
+                                            Entrenar
+                                        </button>
                                         <button
                                             onClick={() => handleDelete(routine.id)}
                                             className="text-red-500 hover:underline"

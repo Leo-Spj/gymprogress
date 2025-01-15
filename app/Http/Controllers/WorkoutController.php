@@ -15,11 +15,16 @@ class WorkoutController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'workout_date' => 'required|date',
-        ]);
+        $user = auth()->user();
+        $today = now()->toDateString();
 
-        $workout = auth()->user()->workouts()->create($validated);
+        $existingWorkout = $user->workouts()->whereDate('workout_date', $today)->first();
+
+        if ($existingWorkout) {
+            return response()->json($existingWorkout, 200);
+        }
+
+        $workout = $user->workouts()->create(['workout_date' => $today]);
         return response()->json($workout, 201);
     }
 

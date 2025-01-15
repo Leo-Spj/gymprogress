@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function () {
     // Rutas para seguimiento de ejercicios
     Route::get('/seguimiento', [WorkoutController::class, 'index'])->name('tracking.index');
     Route::post('/seguimiento', [WorkoutController::class, 'store'])->name('tracking.store');
+    Route::post('/workouts', [WorkoutController::class, 'store'])->name('workouts.store');
 
     // // Rutas para configuraciones de descanso
     // Route::get('/configuracion/descanso', [RestConfigController::class, 'edit'])->name('rest.edit');
