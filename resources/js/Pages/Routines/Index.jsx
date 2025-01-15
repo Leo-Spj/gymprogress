@@ -12,11 +12,7 @@ export default function Index({ auth, routines }) {
     };
 
     const handleTrain = (routineId) => {
-        post(route('workouts.store'), {
-            onSuccess: () => {
-                window.location.href = route('routines.show', routineId);
-            }
-        });
+        post(route('workouts.store', { routine_id: routineId }));
     };
 
     return (

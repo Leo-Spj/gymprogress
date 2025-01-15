@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Workout;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class WorkoutController extends Controller
 {
@@ -21,11 +22,11 @@ class WorkoutController extends Controller
         $existingWorkout = $user->workouts()->whereDate('workout_date', $today)->first();
 
         if ($existingWorkout) {
-            return response()->json($existingWorkout, 200);
+            return redirect()->route('routines.show', $request->routine_id);
         }
 
         $workout = $user->workouts()->create(['workout_date' => $today]);
-        return response()->json($workout, 201);
+        return redirect()->route('routines.show', $request->routine_id);
     }
 
     public function show(Workout $workout)
