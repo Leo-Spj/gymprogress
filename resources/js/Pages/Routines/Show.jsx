@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import axios from 'axios';
 
 export default function Show({ auth, routine }) {
     const { delete: destroy } = useForm();
@@ -26,7 +27,6 @@ export default function Show({ auth, routine }) {
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
-        // Actualizar estado local inmediatamente
         setExercises(items);
 
         const updatedExercises = items.map((exercise, index) => ({
@@ -34,19 +34,12 @@ export default function Show({ auth, routine }) {
             order_index: index + 1
         }));
 
-        // Usar router.put en lugar de fetch
-        router.put(route('routines.updateExercisesOrder', routine.id), 
-            { exercises: updatedExercises },
-            {
-                preserveScroll: true,
-                preserveState: true,
-                onError: () => {
-                    // Revertir cambios si hay error
-                    setExercises(routine.exercises);
-                    alert('Error al actualizar el orden');
-                }
-            }
-        );
+        axios.put(route('routines.updateExercisesOrder', routine.id), {
+            exercises: updatedExercises
+        }).catch(() => {
+            setExercises(routine.exercises);
+            alert('Error al actualizar el orden');
+        });
     };
 
     return (
