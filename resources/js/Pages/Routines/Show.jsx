@@ -1,9 +1,11 @@
-import React from 'react';
-import { Link, useForm } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 export default function Show({ auth, routine }) {
     const { delete: destroy } = useForm();
+    const [exercises, setExercises] = useState(routine.exercises);
 
     const handleDelete = () => {
         if (confirm('¿Estás seguro de que quieres eliminar esta rutina?')) {
@@ -15,6 +17,36 @@ export default function Show({ auth, routine }) {
         if (confirm('¿Estás seguro de que quieres eliminar este ejercicio de la rutina?')) {
             destroy(route('routines.removeExercise', { routine: routine.id, exercise: exerciseId }));
         }
+    };
+
+    const handleDragEnd = (result) => {
+        if (!result.destination) return;
+
+        const items = Array.from(exercises);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        // Actualizar estado local inmediatamente
+        setExercises(items);
+
+        const updatedExercises = items.map((exercise, index) => ({
+            id: exercise.id,
+            order_index: index + 1
+        }));
+
+        // Usar router.put en lugar de fetch
+        router.put(route('routines.updateExercisesOrder', routine.id), 
+            { exercises: updatedExercises },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                onError: () => {
+                    // Revertir cambios si hay error
+                    setExercises(routine.exercises);
+                    alert('Error al actualizar el orden');
+                }
+            }
+        );
     };
 
     return (
@@ -60,29 +92,64 @@ export default function Show({ auth, routine }) {
 
                             <div className="mb-6">
                                 <h3 className="text-lg font-medium mb-2">Ejercicios</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {routine.exercises.map(exercise => (
-                                        <div key={exercise.id} className="flex justify-between items-center">
-                                            <div>
-                                                <p className="text-gray-600"><span className="font-medium">Nombre:</span> {exercise.name}</p>
-                                                <p className="text-gray-600"><span className="font-medium">Tipo:</span> {exercise.type}</p>
-                                                {exercise.image_url && (
-                                                    <img 
-                                                        src={exercise.image_url} 
-                                                        alt={exercise.name}
-                                                        className="w-full max-w-lg h-auto object-cover rounded-lg mt-2"
-                                                    />
-                                                )}
-                                            </div>
-                                            <button
-                                                onClick={() => handleRemove(exercise.id)}
-                                                className="bg-red-500 text-white px-4 py-2 rounded-md"
+                                <DragDropContext onDragEnd={handleDragEnd}>
+                                    <Droppable droppableId="exercises">
+                                        {(provided) => (
+                                            <div
+                                                {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                                className="grid grid-cols-1 gap-4"
                                             >
-                                                Eliminar
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
+                                                {exercises.map((exercise, index) => (
+                                                    <Draggable
+                                                        key={exercise.id}
+                                                        draggableId={exercise.id.toString()}
+                                                        index={index}
+                                                    >
+                                                        {(provided) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
+                                                            >
+                                                                <div className="flex items-center">
+                                                                    <div
+                                                                        {...provided.dragHandleProps}
+                                                                        className="mr-4 cursor-move text-gray-400"
+                                                                    >
+                                                                        ⋮⋮
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-gray-600">
+                                                                            <span className="font-medium">Nombre:</span> {exercise.name}
+                                                                        </p>
+                                                                        <p className="text-gray-600">
+                                                                            <span className="font-medium">Tipo:</span> {exercise.type}
+                                                                        </p>
+                                                                        {exercise.image_url && (
+                                                                            <img 
+                                                                                src={exercise.image_url} 
+                                                                                alt={exercise.name}
+                                                                                className="w-full max-w-lg h-auto object-cover rounded-lg mt-2"
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => handleRemove(exercise.id)}
+                                                                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                                                                >
+                                                                    Eliminar
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
+                                    </Droppable>
+                                </DragDropContext>
                             </div>
 
                             <div className="flex justify-end">

@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/rutinas/{routine}/add-exercise', [RoutineController::class, 'showAddExerciseForm'])->name('routines.showAddExerciseForm');
     Route::post('/rutinas/{routine}/add-exercise', [RoutineController::class, 'addExercise'])->name('routines.addExercise');
     Route::delete('/rutinas/{routine}/remove-exercise/{exercise}', [RoutineController::class, 'removeExercise'])->name('routines.removeExercise');
+    Route::put('/rutinas/{routine}/exercise-order', [RoutineController::class, 'updateExercisesOrder'])->name('routines.updateExercisesOrder');
 
     // Rutas para ejercicios
     Route::get('/ejercicios', [ExerciseController::class, 'index'])->name('exercises.index');

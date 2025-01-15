@@ -25,7 +25,7 @@ class Routine extends Model
     {
         return $this->belongsToMany(Exercise::class, 'routine_exercises')
                     ->withPivot('order_index')
-                    ->orderBy('order_index');
+                    ->orderBy('routine_exercises.order_index', 'asc');
     }
 
     public function routineDays()

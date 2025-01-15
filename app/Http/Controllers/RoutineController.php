@@ -6,6 +6,7 @@ use App\Models\Routine;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class RoutineController extends Controller
 {
@@ -161,5 +162,41 @@ class RoutineController extends Controller
             'routine' => $routine,
             'exercises' => $exercises
         ]);
+    }
+
+    public function updateExercisesOrder(Request $request, Routine $routine)
+    {
+        $this->authorize('update', $routine);
+        
+        $validated = $request->validate([
+            'exercises' => 'required|array',
+            'exercises.*.id' => 'required|exists:exercises,id',
+            'exercises.*.order_index' => 'required|integer|min:1'
+        ]);
+
+        try {
+            DB::beginTransaction();
+            
+            foreach ($validated['exercises'] as $exercise) {
+                $routine->exercises()->updateExistingPivot(
+                    $exercise['id'],
+                    ['order_index' => $exercise['order_index']]
+                );
+            }
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Orden actualizado correctamente'
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el orden'
+            ], 500);
+        }
     }
 }
