@@ -59,9 +59,13 @@ class RoutineController extends Controller
     public function edit(Routine $routine)
     {
         $this->authorize('update', $routine);
+        $routine->load('exercises'); // Asegurar que los ejercicios estén cargados
         $exercises = auth()->user()->exercises()->get();
+        
         return Inertia::render('Routines/Edit', [
-            'routine' => $routine,
+            'routine' => array_merge($routine->toArray(), [
+                'days' => $routine->days ?? [], // Asegurar que days siempre sea un array
+            ]),
             'exercises' => $exercises
         ]);
     }
@@ -75,10 +79,18 @@ class RoutineController extends Controller
             'exercises' => 'array',
         ]);
 
-        $routine->update($validated);
+        $routine->update([
+            'name' => $validated['name'],
+        ]);
 
         if (isset($validated['exercises'])) {
-            $routine->exercises()->sync($validated['exercises']);
+            // Crear un array asociativo con order_index para cada ejercicio
+            $exercisesWithOrder = [];
+            foreach ($validated['exercises'] as $index => $exerciseId) {
+                $exercisesWithOrder[$exerciseId] = ['order_index' => $index + 1];
+            }
+            
+            $routine->exercises()->sync($exercisesWithOrder);
         }
 
         return redirect()->route('routines.index');
@@ -101,7 +113,7 @@ class RoutineController extends Controller
 
         $routine->exercises()->attach($validated['exercise_id'], ['order_index' => $routine->exercises()->count() + 1]);
 
-        return redirect()->route('routines.edit', $routine);
+        return redirect()->route('routines.show', $routine);
     }
 
     public function removeExercise(Routine $routine, $exerciseId)
@@ -109,7 +121,7 @@ class RoutineController extends Controller
         $this->authorize('update', $routine);
         $routine->exercises()->detach($exerciseId);
 
-        return redirect()->route('routines.edit', $routine);
+        return redirect()->route('routines.show', $routine);
     }
 
     public function showAddExerciseForm(Routine $routine)

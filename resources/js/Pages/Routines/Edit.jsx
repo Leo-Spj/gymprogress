@@ -4,9 +4,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Edit({ auth, routine, exercises }) {
     const { data, setData, put, errors } = useForm({
-        name: routine.name,
+        name: routine.name || '',
         days: routine.days || [],
-        exercises: routine.exercises.map(e => e.id),
+        exercises: (routine.exercises || []).map(e => e.id),
     });
 
     const handleSubmit = (e) => {
@@ -61,7 +61,7 @@ export default function Edit({ auth, routine, exercises }) {
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-gray-700">Ejercicios</label>
-                                    {exercises.map(exercise => (
+                                    {(exercises || []).map(exercise => (
                                         <div key={exercise.id} className="flex items-center">
                                             <input
                                                 type="checkbox"
