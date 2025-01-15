@@ -5,8 +5,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 export default function Edit({ auth, routine, exercises }) {
     const { data, setData, put, errors } = useForm({
         name: routine.name || '',
-        days: routine.days || [],
-        exercises: (routine.exercises || []).map(e => e.id),
+        days: routine.days || [], // routine.days ya viene del modelo
+        exercises: routine.exercises?.map(e => e.id) || [],
     });
 
     const handleSubmit = (e) => {

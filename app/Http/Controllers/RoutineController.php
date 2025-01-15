@@ -34,6 +34,7 @@ class RoutineController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'days' => 'array',
+            'days.*' => 'distinct|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
             'exercises' => 'array',
         ]);
 
@@ -71,12 +72,17 @@ class RoutineController extends Controller
     public function edit(Routine $routine)
     {
         $this->authorize('update', $routine);
-        $routine->load('exercises'); // Asegurar que los ejercicios estén cargados
+        $routine->load(['exercises', 'routineDays']);
         $exercises = auth()->user()->exercises()->get();
+        
+        // Asegurarnos de que los días están en minúsculas para coincidir con el formulario
+        $days = $routine->routineDays->pluck('day_of_week')
+            ->map(fn($day) => strtolower($day))
+            ->toArray();
         
         return Inertia::render('Routines/Edit', [
             'routine' => array_merge($routine->toArray(), [
-                'days' => $routine->days ?? [], // Asegurar que days siempre sea un array
+                'days' => $days
             ]),
             'exercises' => $exercises
         ]);
@@ -88,6 +94,7 @@ class RoutineController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'days' => 'array',
+            'days.*' => 'distinct|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
             'exercises' => 'array',
         ]);
 

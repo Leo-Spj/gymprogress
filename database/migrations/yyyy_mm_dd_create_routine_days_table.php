@@ -15,6 +15,9 @@ return new class extends Migration
             $table->foreignId('routine_id')->constrained()->onDelete('cascade');
             $table->enum('day_of_week', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
             $table->timestamps();
+            
+            // Asegurar que no haya días duplicados para una misma rutina
+            $table->unique(['routine_id', 'day_of_week']);
         });
     }
 

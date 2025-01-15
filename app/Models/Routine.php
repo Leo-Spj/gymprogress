@@ -35,6 +35,8 @@ class Routine extends Model
 
     public function getDaysAttribute()
     {
-        return $this->routineDays->pluck('day_of_week')->toArray();
+        return $this->routineDays->pluck('day_of_week')
+            ->map(fn($day) => strtolower($day))
+            ->toArray();
     }
 }
