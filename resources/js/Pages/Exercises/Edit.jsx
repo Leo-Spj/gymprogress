@@ -1,9 +1,9 @@
 import React from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Edit({ auth, exercise }) {
-    const { data, setData, put, errors } = useForm({
+    const { data, setData, put, delete: destroy, errors } = useForm({
         name: exercise.name,
         type: exercise.type,
         image_url: exercise.image_url,
@@ -14,13 +14,30 @@ export default function Edit({ auth, exercise }) {
         put(route('exercises.update', exercise.id));
     };
 
+    const handleDelete = () => {
+        if (confirm('¿Estás seguro de que quieres eliminar este ejercicio?')) {
+            destroy(route('exercises.destroy', exercise.id), {
+                onSuccess: () => router.visit(route('exercises.index'))
+            });
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm rounded-lg">
                         <div className="p-6">
-                            <h2 className="text-xl font-semibold mb-6">Editar Ejercicio</h2>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-semibold">Editar Ejercicio</h2>
+                                <button
+                                    onClick={handleDelete}
+                                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                                    type="button"
+                                >
+                                    Eliminar Ejercicio
+                                </button>
+                            </div>
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-4">
                                     <label className="block text-gray-700">Nombre</label>
