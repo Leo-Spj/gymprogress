@@ -7,7 +7,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 
-export default function Rest({ auth, exercise }) {
+export default function Rest({ auth, exercise, trendsData }) {
     const [selectedTime, setSelectedTime] = useState(dayjs().hour(0).minute(3).second(0));
     const [timeLeft, setTimeLeft] = useState(0);
     const [isActive, setIsActive] = useState(false);
@@ -221,6 +221,52 @@ export default function Rest({ auth, exercise }) {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+
+                    {/* Nueva sección para la tabla */}
+                    <div className="bg-white overflow-hidden shadow-sm rounded-lg mt-6">
+                        <div className="p-6">
+                            <h2 className="text-2xl font-semibold mb-4">Historial de Sets</h2>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Fecha
+                                            </th>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Peso (kg)
+                                            </th>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Repeticiones
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {trendsData && trendsData.map((set, index) => (
+                                            <tr key={set.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {new Date(set.date).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {set.weight}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {set.reps}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {(!trendsData || trendsData.length === 0) && (
+                                            <tr>
+                                                <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-500">
+                                                    No hay registros disponibles
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

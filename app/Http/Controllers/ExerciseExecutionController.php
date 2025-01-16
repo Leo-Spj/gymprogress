@@ -7,6 +7,7 @@ use App\Models\Workout;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class ExerciseExecutionController extends Controller
 {
@@ -50,9 +51,25 @@ class ExerciseExecutionController extends Controller
     public function rest(Exercise $exercise)
     {
         $this->authorize('view', $exercise);
+        $trendsData = DB::table('workout_sets')
+            ->join('workouts', 'workouts.id', '=', 'workout_sets.workout_id')
+            ->where('exercise_id', $exercise->id)
+            ->where('workouts.user_id', auth()->id())
+            ->select(
+                'workout_sets.id',
+                'workout_sets.reps',
+                'workout_sets.weight',
+                'workouts.workout_date as date'
+            )
+            ->orderBy('workouts.workout_date', 'desc')
+            ->orderBy('workout_sets.id', 'desc')
+            ->limit(50)
+            ->get();
+
         return Inertia::render('Exercise/Rest', [
             'exercise' => $exercise,
-            'restConfig' => auth()->user()->restConfig
+            'restConfig' => auth()->user()->restConfig,
+            'trendsData' => $trendsData
         ]);
     }
 }
