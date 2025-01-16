@@ -137,7 +137,10 @@ export default function Show({ auth, routine }) {
                                                                         Tendencias
                                                                     </Link>
                                                                     <Link
-                                                                        href={route('exercise.rest', exercise.id)}
+                                                                        href={route('exercise.rest', { 
+                                                                            exercise: exercise.id,
+                                                                            routine_id: routine.id 
+                                                                        })}
                                                                         className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 text-center"
                                                                     >
                                                                         Entrenar

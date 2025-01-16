@@ -49,9 +49,11 @@ class ExerciseExecutionController extends Controller
         return response()->json($set->fresh());
     }
 
-    public function rest(Exercise $exercise)
+    public function rest(Exercise $exercise, Request $request)
     {
         $this->authorize('view', $exercise);
+        $routineId = $request->query('routine_id');
+        
         $trendsData = DB::table('workout_sets')
             ->join('workouts', 'workouts.id', '=', 'workout_sets.workout_id')
             ->where('exercise_id', $exercise->id)
@@ -70,7 +72,8 @@ class ExerciseExecutionController extends Controller
         return Inertia::render('Exercise/Rest', [
             'exercise' => $exercise,
             'restConfig' => auth()->user()->restConfig,
-            'trendsData' => $trendsData
+            'trendsData' => $trendsData,
+            'routineId' => $routineId
         ]);
     }
 }
