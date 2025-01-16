@@ -74,18 +74,19 @@ class WorkoutController extends Controller
 
     public function trends(Exercise $exercise)
     {
-        $trends = WorkoutSet::select(
-            DB::raw('DATE(workout_sets.created_at) as date'),
-            DB::raw('AVG(weight) as avg_weight'),
-            DB::raw('SUM(reps) as total_reps'),
-            DB::raw('COUNT(*) as sets_count')
-        )
-        ->join('workouts', 'workouts.id', '=', 'workout_sets.workout_id')
-        ->where('exercise_id', $exercise->id)
-        ->where('workouts.user_id', auth()->id())
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get();
+        $trends = DB::table('workout_sets')
+            ->join('workouts', 'workouts.id', '=', 'workout_sets.workout_id')
+            ->where('exercise_id', $exercise->id)
+            ->where('workouts.user_id', auth()->id())
+            ->select(
+                'workout_sets.id',
+                'workout_sets.reps',
+                'workout_sets.weight',
+                'workouts.workout_date as date'
+            )
+            ->orderBy('workouts.workout_date')
+            ->orderBy('workout_sets.id')
+            ->get();
 
         return Inertia::render('Exercise/Trends', [
             'exercise' => $exercise,
