@@ -104,28 +104,28 @@ export default function Index({ auth, exercises }) {
                     {Object.entries(filteredAndGroupedExercises).map(([type, groupExercises]) => (
                         <div key={type} className="mb-8">
                             <h3 className="text-lg font-semibold mb-4 bg-gray-100 p-2 rounded">{type}</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 gap-3">
                                 {groupExercises.map((exercise) => (
-                                    <div key={exercise.id} className="bg-white overflow-hidden shadow-sm rounded-lg relative p-4 flex justify-between items-center">
-                                        <div className="flex items-center">
+                                    <div key={exercise.id} className="bg-white p-3 rounded-lg shadow-sm flex flex-col">
+                                        <div className="flex items-center mb-3">
                                             {exercise.image_url ? (
                                                 <img 
                                                     src={exercise.image_url} 
                                                     alt={exercise.name}
-                                                    className="w-16 h-16 object-cover rounded-lg mr-4"
+                                                    className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
                                                 />
                                             ) : (
                                                 exercise.image_path && (
                                                     <img 
                                                         src={`/storage/${exercise.image_path}`} 
                                                         alt={exercise.name}
-                                                        className="w-16 h-16 object-cover rounded-lg mr-4"
+                                                        className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
                                                     />
                                                 )
                                             )}
-                                            <div>
-                                                <p className="text-gray-600">
-                                                    <span className="font-medium">Nombre:</span> {exercise.name}
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-gray-900 text-sm font-medium truncate">
+                                                    {exercise.name}
                                                 </p>
                                                 <div className="flex flex-wrap gap-1">
                                                     {Array.isArray(exercise.type) 
@@ -143,16 +143,16 @@ export default function Index({ auth, exercises }) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex flex-col gap-2">
+                                        <div className="grid grid-cols-2 gap-2">
                                             <Link
                                                 href={route('exercises.edit', exercise.id)}
-                                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-center"
+                                                className="bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 text-center text-sm"
                                             >
                                                 Editar
                                             </Link>
                                             <Link
                                                 href={route('trends.show', exercise.id)}
-                                                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 text-center"
+                                                className="bg-green-500 text-white py-1.5 px-3 rounded-md hover:bg-green-600 text-center text-sm"
                                             >
                                                 Tendencias
                                             </Link>
