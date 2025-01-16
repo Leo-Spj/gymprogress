@@ -40,8 +40,28 @@ const getTypeColor = (type) => {
     return colors[type] || 'bg-gray-100 text-gray-800';
 };
 
+const translateDay = (day) => {
+    const translations = {
+        'monday': 'Lunes',
+        'tuesday': 'Martes',
+        'wednesday': 'Miércoles',
+        'thursday': 'Jueves',
+        'friday': 'Viernes',
+        'saturday': 'Sábado',
+        'sunday': 'Domingo'
+    };
+    return translations[day.toLowerCase()] || day;
+};
+
+const getCurrentDay = () => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const currentDay = new Date().getDay();
+    return days[currentDay];
+};
+
 export default function Show({ auth, routine }) {
     const [exercises, setExercises] = useState(routine.exercises);
+    const currentDay = getCurrentDay();
 
     const handleDragEnd = (result) => {
         if (!result.destination) return;
@@ -104,8 +124,17 @@ export default function Show({ auth, routine }) {
                                 <h3 className="text-lg font-medium mb-2">Días de entrenamiento</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {routine.days.map(day => (
-                                        <span key={day} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full capitalize">
-                                            {day}
+                                        <span 
+                                            key={day} 
+                                            className={`
+                                                text-xs px-2 py-1 rounded-full
+                                                ${day.toLowerCase() === currentDay 
+                                                    ? 'bg-green-500 text-white font-bold' 
+                                                    : 'bg-gray-100'
+                                                }
+                                            `}
+                                        >
+                                            {translateDay(day)}
                                         </span>
                                     ))}
                                 </div>
