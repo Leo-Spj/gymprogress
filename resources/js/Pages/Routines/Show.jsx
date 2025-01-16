@@ -16,7 +16,14 @@ export default function Show({ auth, routine }) {
 
     const handleRemove = (exerciseId) => {
         if (confirm('¿Estás seguro de que quieres eliminar este ejercicio de la rutina?')) {
-            destroy(route('routines.removeExercise', { routine: routine.id, exercise: exerciseId }));
+            axios.delete(route('routines.removeExercise', { routine: routine.id, exercise: exerciseId }))
+                .then(() => {
+                    // Actualizar el estado local eliminando el ejercicio
+                    setExercises(exercises.filter(exercise => exercise.id !== exerciseId));
+                })
+                .catch(() => {
+                    alert('Error al eliminar el ejercicio');
+                });
         }
     };
 
@@ -100,7 +107,7 @@ export default function Show({ auth, routine }) {
                                                 ref={provided.innerRef}
                                                 className="grid grid-cols-1 gap-4"
                                             >
-                                                                                                ...
+                                                
                                                 {exercises.map((exercise, index) => (
                                                     <Draggable
                                                         key={exercise.id}

@@ -148,9 +148,18 @@ class RoutineController extends Controller
     public function removeExercise(Routine $routine, $exerciseId)
     {
         $this->authorize('update', $routine);
-        $routine->exercises()->detach($exerciseId);
-
-        return redirect()->route('routines.show', $routine);
+        try {
+            $routine->exercises()->detach($exerciseId);
+            return response()->json([
+                'success' => true,
+                'message' => 'Ejercicio eliminado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar el ejercicio'
+            ], 500);
+        }
     }
 
     public function showAddExerciseForm(Routine $routine)
