@@ -15,16 +15,28 @@ export default function Index({ auth, exercises }) {
     const filteredAndGroupedExercises = useMemo(() => {
         const searchNormalized = normalizeText(searchQuery);
         
-        const filtered = exercises.filter(exercise =>
-            normalizeText(exercise.name).includes(searchNormalized) ||
-            normalizeText(exercise.type).includes(searchNormalized)
-        );
+        const filtered = exercises.filter(exercise => {
+            // Buscar en el nombre
+            const nameMatch = normalizeText(exercise.name).includes(searchNormalized);
+            
+            // Buscar en los tipos (que ahora es un array)
+            const typeMatch = Array.isArray(exercise.type) 
+                ? exercise.type.some(type => normalizeText(type).includes(searchNormalized))
+                : normalizeText(exercise.type?.join(', ') || '').includes(searchNormalized);
+            
+            return nameMatch || typeMatch;
+        });
 
+        // Agrupar por el primer tipo del ejercicio
         return filtered.reduce((groups, exercise) => {
-            if (!groups[exercise.type]) {
-                groups[exercise.type] = [];
+            const primaryType = Array.isArray(exercise.type) && exercise.type.length > 0 
+                ? exercise.type[0] 
+                : 'Sin categoría';
+                
+            if (!groups[primaryType]) {
+                groups[primaryType] = [];
             }
-            groups[exercise.type].push(exercise);
+            groups[primaryType].push(exercise);
             return groups;
         }, {});
     }, [exercises, searchQuery]);
@@ -79,9 +91,12 @@ export default function Index({ auth, exercises }) {
                                                 <p className="text-gray-600">
                                                     <span className="font-medium">Nombre:</span> {exercise.name}
                                                 </p>
-                                                <p className="text-gray-600">
-                                                    <span className="font-medium">Tipo:</span> {exercise.type}
-                                                </p>
+                                                <div>
+                                                    <span className="font-semibold">Tipo: </span>
+                                                    {Array.isArray(exercise.type) 
+                                                        ? exercise.type.join(', ')
+                                                        : exercise.type?.split(',').join(', ')}
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-2">
