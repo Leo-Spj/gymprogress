@@ -14,7 +14,7 @@ class ExerciseExecutionController extends Controller
     public function start(Exercise $exercise)
     {
         $this->authorize('view', $exercise);
-        return Inertia::render('Exercise/Execute', [
+        return Inertia::render('Exercise/Start', [
             'exercise' => $exercise
         ]);
     }
