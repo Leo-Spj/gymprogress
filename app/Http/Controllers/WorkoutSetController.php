@@ -28,7 +28,10 @@ class WorkoutSetController extends Controller
 
     public function update(Request $request, WorkoutSet $set)
     {
-        $this->authorize('update', $set->workout);
+        // Verificar que el workout pertenece al usuario actual
+        if ($set->workout->user_id !== auth()->id()) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
         
         $validated = $request->validate([
             'reps' => 'required|integer|min:1',
@@ -36,8 +39,12 @@ class WorkoutSetController extends Controller
             'duration_seconds' => 'integer|min:0',
         ]);
 
-        $set->update($validated);
-        return response()->json($set);
+        try {
+            $set->update($validated);
+            return response()->json($set->fresh());
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al actualizar el set'], 500);
+        }
     }
 
     public function destroy(WorkoutSet $set)

@@ -7,7 +7,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 
-export default function Rest({ auth, exercise, trendsData }) {
+export default function Rest({ auth, exercise, trendsData: initialTrendsData }) {
     const [selectedTime, setSelectedTime] = useState(dayjs().hour(0).minute(3).second(0));
     const [timeLeft, setTimeLeft] = useState(0);
     const [isActive, setIsActive] = useState(false);
@@ -20,6 +20,9 @@ export default function Rest({ auth, exercise, trendsData }) {
         duration_seconds: 0
     });
     const [audio] = useState(new Audio('/sounds/beep.mp3')); // Cambia a tu archivo local
+    const [trendsData, setTrendsData] = useState(initialTrendsData);
+    const [editingSet, setEditingSet] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
         // Precarga el audio
@@ -108,6 +111,44 @@ export default function Rest({ auth, exercise, trendsData }) {
     const skipRest = () => {
         setTimeLeft(0);
         setIsActive(false);
+    };
+
+    const handleEdit = async (e) => {
+        e.preventDefault();
+        try {
+            // Convertir los valores a números
+            const updatedSet = {
+                ...editingSet,
+                reps: parseInt(editingSet.reps),
+                weight: parseFloat(editingSet.weight),
+                duration_seconds: parseInt(editingSet.duration_seconds || 0)
+            };
+
+            const response = await axios.put(`/workout-sets/${editingSet.id}`, updatedSet);
+
+            if (response.data) {
+                // Actualizar el estado local con los datos actualizados
+                setTrendsData(trendsData.map(set => 
+                    set.id === editingSet.id ? response.data : set
+                ));
+                setShowEditModal(false);
+            }
+        } catch (error) {
+            console.error('Error al actualizar el set:', error.response?.data || error);
+            alert('Error al actualizar el set: ' + (error.response?.data?.message || 'Error desconocido'));
+        }
+    };
+
+    const handleDelete = async (setId) => {
+        if (confirm('¿Estás seguro de que deseas eliminar este set?')) {
+            try {
+                await axios.delete(route('workout-sets.destroy', setId));
+                setTrendsData(trendsData.filter(set => set.id !== setId));
+            } catch (error) {
+                console.error('Error al eliminar el set:', error);
+                alert('Error al eliminar el set');
+            }
+        }
     };
 
     return (
@@ -239,7 +280,10 @@ export default function Rest({ auth, exercise, trendsData }) {
                                                 Peso (kg)
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Repeticiones
+                                                Reps
+                                            </th>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Acciones
                                             </th>
                                         </tr>
                                     </thead>
@@ -254,6 +298,23 @@ export default function Rest({ auth, exercise, trendsData }) {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     {set.reps}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditingSet(set);
+                                                            setShowEditModal(true);
+                                                        }}
+                                                        className="text-blue-600 hover:text-blue-900 mr-3"
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(set.id)}
+                                                        className="text-red-600 hover:text-red-900"
+                                                    >
+                                                        🗑️
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -271,6 +332,59 @@ export default function Rest({ auth, exercise, trendsData }) {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de edición */}
+            {showEditModal && editingSet && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                        <h3 className="text-lg font-semibold mb-4">Editar Set</h3>
+                        <form onSubmit={handleEdit}>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Peso</label>
+                                <input
+                                    type="number"
+                                    step="0.5"
+                                    className="w-full p-2 border rounded"
+                                    value={editingSet.weight}
+                                    onChange={(e) => setEditingSet({
+                                        ...editingSet,
+                                        weight: e.target.value
+                                    })}
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Repeticiones</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-2 border rounded"
+                                    value={editingSet.reps}
+                                    onChange={(e) => setEditingSet({
+                                        ...editingSet,
+                                        reps: e.target.value
+                                    })}
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditModal(false)}
+                                    className="px-4 py-2 bg-gray-300 rounded"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                                >
+                                    Actualizar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AuthenticatedLayout>
     );
 }

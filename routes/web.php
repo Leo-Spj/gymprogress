@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\RoutineController;
 use App\Http\Controllers\WorkoutController;
+use App\Http\Controllers\WorkoutSetController; // Añadir esta línea
 use App\Http\Controllers\RestConfigController;
 use App\Http\Controllers\ExerciseExecutionController;
 use Illuminate\Foundation\Application;
@@ -69,6 +70,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/ejercicio/{exercise}/iniciar', [ExerciseExecutionController::class, 'start'])->name('exercise.start');
     Route::post('/ejercicio/{exercise}/finalizar', [ExerciseExecutionController::class, 'finish'])->name('exercise.finish');
     Route::get('/ejercicio/{exercise}/descanso', [ExerciseExecutionController::class, 'rest'])->name('exercise.rest');
+
+    // Rutas para workout sets
+    Route::controller(WorkoutSetController::class)->group(function () {
+        Route::put('/workout-sets/{set}', 'update')->name('workout-sets.update');
+        Route::delete('/workout-sets/{set}', 'destroy')->name('workout-sets.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';
