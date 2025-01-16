@@ -36,7 +36,14 @@ export default function Show({ auth, routine }) {
 
         axios.put(route('routines.updateExercisesOrder', routine.id), {
             exercises: updatedExercises
-        }).catch(() => {
+        })
+        .then(response => {
+            if (!response.data.success) {
+                setExercises(routine.exercises);
+                alert('Error al actualizar el orden');
+            }
+        })
+        .catch(() => {
             setExercises(routine.exercises);
             alert('Error al actualizar el orden');
         });

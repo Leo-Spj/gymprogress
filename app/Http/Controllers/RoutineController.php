@@ -186,11 +186,17 @@ class RoutineController extends Controller
             
             DB::commit();
             
-            return back();
+            return response()->json([
+                'success' => true,
+                'message' => 'Orden actualizado correctamente'
+            ]);
             
         } catch (\Exception $e) {
             DB::rollback();
-            return back()->with('error', 'Error al actualizar el orden');
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el orden'
+            ], 500);
         }
     }
 }
