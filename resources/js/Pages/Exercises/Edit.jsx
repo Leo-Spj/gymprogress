@@ -1,17 +1,50 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Edit({ auth, exercise }) {
+    const imageInputRef = useRef(null);
+    const [previewUrl, setPreviewUrl] = useState(exercise.image_path ? `/storage/${exercise.image_path}` : null);
+    
     const { data, setData, put, delete: destroy, errors } = useForm({
         name: exercise.name,
         type: exercise.type,
         image_url: exercise.image_url,
+        image: null
     });
+
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Crear preview
+        setPreviewUrl(URL.createObjectURL(file));
+
+        // Optimizar imagen
+        const optimizedImage = await optimizeImage(file);
+        setData('image', optimizedImage);
+    };
+
+    const optimizeImage = async (file) => {
+        // ... mismo código de optimización que en Create.jsx ...
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(route('exercises.update', exercise.id));
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('type', data.type);
+        formData.append('image_url', data.image_url);
+        if (data.image) {
+            formData.append('image', data.image);
+        }
+
+        put(route('exercises.update', exercise.id), formData, {
+            // Removed 'Content-Type' header to let the browser set it automatically
+            onSuccess: () => {
+                // Opcional: redirigir o mostrar un mensaje de éxito
+            }
+        });
     };
 
     const handleDelete = () => {
@@ -68,6 +101,26 @@ export default function Edit({ auth, exercise }) {
                                         className="mt-1 block w-full"
                                     />
                                     {errors.image_url && <div className="text-red-500 mt-2">{errors.image_url}</div>}
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700">Imagen</label>
+                                    <input
+                                        type="file"
+                                        ref={imageInputRef}
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        className="mt-1 block w-full"
+                                    />
+                                    {previewUrl && (
+                                        <img 
+                                            src={previewUrl} 
+                                            alt="Preview" 
+                                            className="mt-2 h-48 object-cover rounded-md"
+                                        />
+                                    )}
+                                    {errors.image && (
+                                        <div className="text-red-500 mt-2">{errors.image}</div>
+                                    )}
                                 </div>
                                 <div className="flex justify-end">
                                     <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">

@@ -13,7 +13,8 @@ class Exercise extends Model
         'user_id',
         'name',
         'type',
-        'image_url'
+        'image_url',
+        'image_path'
     ];
 
     public function user()

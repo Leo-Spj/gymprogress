@@ -6,6 +6,7 @@ use App\Models\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class ExerciseController extends Controller
 {
@@ -30,9 +31,16 @@ class ExerciseController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
             'image_url' => 'nullable|url|max:2083',
+            'image' => 'nullable|image|max:5120', // Permitir imágenes hasta 5MB
         ]);
 
         $validated['user_id'] = auth()->id();
+        
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('exercises', 'public');
+            $validated['image_path'] = $path;
+        }
+
         $exercise = Exercise::create($validated);
         
         return redirect()->route('exercises.index');
@@ -57,11 +65,23 @@ class ExerciseController extends Controller
     public function update(Request $request, Exercise $exercise)
     {
         $this->authorize('update', $exercise);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
             'image_url' => 'nullable|url|max:2083',
+            'image' => 'nullable|image|max:5120',
         ]);
+
+        if ($request->hasFile('image')) {
+            // Eliminar imagen anterior si existe
+            if ($exercise->image_path) {
+                Storage::disk('public')->delete($exercise->image_path);
+            }
+            
+            $path = $request->file('image')->store('exercises', 'public');
+            $validated['image_path'] = $path;
+        }
 
         $exercise->update($validated);
         return redirect()->route('exercises.index');
@@ -70,6 +90,11 @@ class ExerciseController extends Controller
     public function destroy(Exercise $exercise)
     {
         $this->authorize('delete', $exercise);
+        
+        if ($exercise->image_path) {
+            Storage::disk('public')->delete($exercise->image_path);
+        }
+        
         $exercise->delete();
         return response()->json(null, 204);
     }
