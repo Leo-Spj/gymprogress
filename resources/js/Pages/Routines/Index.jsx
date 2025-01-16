@@ -45,22 +45,16 @@ export default function Index({ auth, routines }) {
                                     </p>
                                     <div className="mt-4 flex space-x-4">
                                         <Link
-                                            href={route('routines.show', routine.id)}
+                                            href={route('routines.edit', routine.id)}
                                             className="text-blue-500 hover:underline"
                                         >
-                                            Ver detalles
+                                            Editar
                                         </Link>
                                         <button
                                             onClick={() => handleTrain(routine.id)}
-                                            className="text-green-500 hover:underline"
+                                            className="bg-green-500 text-white px-4 py-2 rounded-md"
                                         >
                                             Entrenar
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(routine.id)}
-                                            className="text-red-500 hover:underline"
-                                        >
-                                            Eliminar
                                         </button>
                                     </div>
                                 </div>

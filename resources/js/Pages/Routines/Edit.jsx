@@ -26,6 +26,12 @@ export default function Edit({ auth, routine, exercises }) {
             : [...data.exercises, exerciseId]);
     };
 
+    const handleDelete = () => {
+        if (confirm('¿Estás seguro de que quieres eliminar esta rutina?')) {
+            destroy(route('routines.destroy', routine.id));
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="py-12">
@@ -74,7 +80,13 @@ export default function Edit({ auth, routine, exercises }) {
                                     ))}
                                     {errors.exercises && <div className="text-red-500 mt-2">{errors.exercises}</div>}
                                 </div>
-                                <div className="flex justify-end">
+                                <div className="flex justify-end space-x-4">
+                                    <button
+                                        onClick={handleDelete}
+                                        className="bg-red-500 text-white px-4 py-2 rounded-md"
+                                    >
+                                        Eliminar
+                                    </button>
                                     <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">
                                         Guardar
                                     </button>

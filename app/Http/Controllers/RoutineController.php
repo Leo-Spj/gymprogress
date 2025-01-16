@@ -148,18 +148,9 @@ class RoutineController extends Controller
     public function removeExercise(Routine $routine, $exerciseId)
     {
         $this->authorize('update', $routine);
-        try {
-            $routine->exercises()->detach($exerciseId);
-            return response()->json([
-                'success' => true,
-                'message' => 'Ejercicio eliminado correctamente'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al eliminar el ejercicio'
-            ], 500);
-        }
+        $routine->exercises()->detach($exerciseId);
+
+        return redirect()->route('routines.show', $routine);
     }
 
     public function showAddExerciseForm(Routine $routine)
@@ -195,17 +186,11 @@ class RoutineController extends Controller
             
             DB::commit();
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Orden actualizado correctamente'
-            ]);
+            return back();
             
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar el orden'
-            ], 500);
+            return back()->with('error', 'Error al actualizar el orden');
         }
     }
 }
