@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
     // Modificar las rutas de workouts
     Route::post('/workouts/get-or-create', [WorkoutController::class, 'getOrCreate'])->name('workouts.getOrCreate');
 
+    // Agregar nueva ruta para tendencias
+    Route::get('/tendencias/{exercise}', [WorkoutController::class, 'trends'])->name('trends.show');
+
     // // Rutas para configuraciones de descanso
     // Route::get('/configuracion/descanso', [RestConfigController::class, 'edit'])->name('rest.edit');
     // Route::put('/configuracion/descanso', [RestConfigController::class, 'update'])->name('rest.update');

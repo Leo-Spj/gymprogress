@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Workout;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Exercise;
+use App\Models\WorkoutSet;
+use Illuminate\Support\Facades\DB;
 
 class WorkoutController extends Controller
 {
@@ -67,5 +70,26 @@ class WorkoutController extends Controller
         }
 
         return response()->json($workout);
+    }
+
+    public function trends(Exercise $exercise)
+    {
+        $trends = WorkoutSet::select(
+            DB::raw('DATE(workout_sets.created_at) as date'),
+            DB::raw('AVG(weight) as avg_weight'),
+            DB::raw('SUM(reps) as total_reps'),
+            DB::raw('COUNT(*) as sets_count')
+        )
+        ->join('workouts', 'workouts.id', '=', 'workout_sets.workout_id')
+        ->where('exercise_id', $exercise->id)
+        ->where('workouts.user_id', auth()->id())
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get();
+
+        return Inertia::render('Exercise/Trends', [
+            'exercise' => $exercise,
+            'trendsData' => $trends
+        ]);
     }
 }
