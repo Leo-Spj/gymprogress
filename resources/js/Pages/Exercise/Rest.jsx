@@ -153,7 +153,7 @@ export default function Rest({ auth, exercise }) {
                                         <h3 className="text-lg font-semibold mb-4">Registrar Set - {exercise.name}</h3>
                                         <form onSubmit={handleSubmit}>
                                             <div className="mb-4">
-                                                <label className="block text-gray-700 mb-2">Peso (kg)</label>
+                                                <label className="block text-gray-700 mb-2">Peso</label>
                                                 <input
                                                     type="number"
                                                     step="0.5"
