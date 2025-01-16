@@ -22,7 +22,10 @@ class ExerciseController extends Controller
 
     public function create()
     {
-        return Inertia::render('Exercises/Create');
+        $existingTypes = Exercise::getUniqueTypes();
+        return Inertia::render('Exercises/Create', [
+            'existingTypes' => $existingTypes
+        ]);
     }
 
     public function store(Request $request)
@@ -57,8 +60,10 @@ class ExerciseController extends Controller
     public function edit(Exercise $exercise)
     {
         $this->authorize('update', $exercise);
+        $existingTypes = Exercise::getUniqueTypes();
         return Inertia::render('Exercises/Edit', [
-            'exercise' => $exercise
+            'exercise' => $exercise,
+            'existingTypes' => $existingTypes
         ]);
     }
 
