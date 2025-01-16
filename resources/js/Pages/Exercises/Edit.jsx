@@ -31,18 +31,31 @@ export default function Edit({ auth, exercise }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
         const formData = new FormData();
+        formData.append('_method', 'PUT');
         formData.append('name', data.name);
         formData.append('type', data.type);
-        formData.append('image_url', data.image_url);
-        if (data.image) {
-            formData.append('image', data.image);
+        
+        // Solo agregar image_url si tiene un valor
+        if (data.image_url) {
+            formData.append('image_url', data.image_url);
+        }
+        
+        // Verificar si hay una nueva imagen seleccionada
+        const fileInput = imageInputRef.current;
+        if (fileInput && fileInput.files[0]) {
+            formData.append('image', fileInput.files[0]);
         }
 
-        put(route('exercises.update', exercise.id), formData, {
-            // Removed 'Content-Type' header to let the browser set it automatically
+        router.post(route('exercises.update', exercise.id), formData, {
+            forceFormData: true,
+            preserveScroll: true,
             onSuccess: () => {
-                // Opcional: redirigir o mostrar un mensaje de éxito
+                console.log('Ejercicio actualizado con éxito');
+            },
+            onError: (errors) => {
+                console.error('Error al actualizar:', errors);
             }
         });
     };

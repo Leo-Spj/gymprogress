@@ -73,18 +73,32 @@ class ExerciseController extends Controller
             'image' => 'nullable|image|max:5120',
         ]);
 
-        if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
-            if ($exercise->image_path) {
-                Storage::disk('public')->delete($exercise->image_path);
-            }
-            
-            $path = $request->file('image')->store('exercises', 'public');
-            $validated['image_path'] = $path;
-        }
+        try {
+            \DB::beginTransaction();
 
-        $exercise->update($validated);
-        return redirect()->route('exercises.index');
+            if ($request->hasFile('image')) {
+                // Eliminar imagen anterior si existe
+                if ($exercise->image_path) {
+                    Storage::disk('public')->delete($exercise->image_path);
+                }
+                
+                $path = $request->file('image')->store('exercises', 'public');
+                $exercise->image_path = $path;
+            }
+
+            $exercise->name = $validated['name'];
+            $exercise->type = $validated['type'];
+            $exercise->image_url = $validated['image_url'] ?? null;
+            
+            $exercise->save();
+
+            \DB::commit();
+            return redirect()->route('exercises.index');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return back()->withErrors(['error' => 'Error al actualizar el ejercicio: ' . $e->getMessage()]);
+        }
     }
 
     public function destroy(Exercise $exercise)
