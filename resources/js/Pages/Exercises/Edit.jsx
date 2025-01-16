@@ -17,16 +17,69 @@ export default function Edit({ auth, exercise }) {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Crear preview
-        setPreviewUrl(URL.createObjectURL(file));
+        try {
+            // Crear preview
+            setPreviewUrl(URL.createObjectURL(file));
 
-        // Optimizar imagen
-        const optimizedImage = await optimizeImage(file);
-        setData('image', optimizedImage);
+            // Optimizar imagen
+            const optimizedImage = await optimizeImage(file);
+            console.log('Tamaño original:', file.size, 'bytes');
+            console.log('Tamaño optimizado:', optimizedImage.size, 'bytes');
+            
+            setData('image', optimizedImage);
+        } catch (error) {
+            console.error('Error al optimizar la imagen:', error);
+        }
     };
 
     const optimizeImage = async (file) => {
-        // ... mismo código de optimización que en Create.jsx ...
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Crear un canvas para redimensionar
+                    const canvas = document.createElement('canvas');
+                    // Establecer dimensiones máximas
+                    const MAX_WIDTH = 400*0.55;
+                    const MAX_HEIGHT = 300*0.55;
+                    
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Calcular nuevas dimensiones manteniendo proporción
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convertir a WebP con baja calidad
+                    canvas.toBlob((blob) => {
+                        // Crear nuevo archivo con el blob optimizado
+                        const optimizedFile = new File([blob], file.name, {
+                            type: 'image/webp',
+                            lastModified: Date.now()
+                        });
+                        resolve(optimizedFile);
+                    }, 'image/webp', 0.1); // 0.1 = 10% de calidad
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
     };
 
     const handleSubmit = (e) => {
