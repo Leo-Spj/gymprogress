@@ -83,7 +83,7 @@ export default function Show({ auth, routine }) {
                                             <div
                                                 {...provided.droppableProps}
                                                 ref={provided.innerRef}
-                                                className="grid grid-cols-1 gap-4"
+                                                className="grid grid-cols-1 gap-3"
                                             >
                                             
                                                 {exercises.map((exercise, index) => (
@@ -96,12 +96,12 @@ export default function Show({ auth, routine }) {
                                                             <div
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
-                                                                className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
+                                                                className="bg-white p-3 rounded-lg shadow-sm flex flex-col"
                                                             >
-                                                                <div className="flex items-center">
+                                                                <div className="flex items-center mb-3">
                                                                     <div
                                                                         {...provided.dragHandleProps}
-                                                                        className="mr-4 cursor-move text-gray-400"
+                                                                        className="mr-3 cursor-move text-gray-400"
                                                                     >
                                                                         ⋮⋮
                                                                     </div>
@@ -109,30 +109,30 @@ export default function Show({ auth, routine }) {
                                                                         <img 
                                                                             src={exercise.image_url} 
                                                                             alt={exercise.name}
-                                                                            className="w-16 h-16 object-cover rounded-lg mr-4"
+                                                                            className="w-12 h-12 object-cover rounded-lg mr-3"
                                                                         />
                                                                     ) : (
                                                                         exercise.image_path && (
                                                                             <img 
                                                                                 src={`/storage/${exercise.image_path}`} 
                                                                                 alt={exercise.name}
-                                                                                className="w-16 h-16 object-cover rounded-lg mr-4"
+                                                                                className="w-12 h-12 object-cover rounded-lg mr-3"
                                                                             />
                                                                         )
                                                                     )}
                                                                     <div>
-                                                                        <p className="text-gray-600">
+                                                                        <p className="text-gray-600 text-sm">
                                                                             <span className="font-medium">Nombre:</span> {exercise.name}
                                                                         </p>
-                                                                        <p className="text-gray-600">
+                                                                        <p className="text-gray-600 text-sm">
                                                                             <span className="font-medium">Tipo:</span> {exercise.type}
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex flex-col gap-2">
+                                                                <div className="grid grid-cols-2 gap-2">
                                                                     <Link
                                                                         href={route('trends.show', exercise.id)}
-                                                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-center"
+                                                                        className="bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 text-center text-sm"
                                                                     >
                                                                         Tendencias
                                                                     </Link>
@@ -141,7 +141,7 @@ export default function Show({ auth, routine }) {
                                                                             exercise: exercise.id,
                                                                             routine_id: routine.id 
                                                                         })}
-                                                                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 text-center"
+                                                                        className="bg-green-500 text-white py-1.5 px-3 rounded-md hover:bg-green-600 text-center text-sm"
                                                                     >
                                                                         Entrenar
                                                                     </Link>
