@@ -121,12 +121,20 @@ export default function Show({ auth, routine }) {
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <Link
-                                                                    href={route('exercise.rest', exercise.id)}
-                                                                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-                                                                >
-                                                                    Entrenar
-                                                                </Link>
+                                                                <div className="flex flex-col gap-2">
+                                                                    <Link
+                                                                        href={route('trends.show', exercise.id)}
+                                                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-center"
+                                                                    >
+                                                                        Tendencias
+                                                                    </Link>
+                                                                    <Link
+                                                                        href={route('exercise.rest', exercise.id)}
+                                                                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 text-center"
+                                                                    >
+                                                                        Entrenar
+                                                                    </Link>
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </Draggable>

@@ -59,12 +59,20 @@ export default function Index({ auth, exercises }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {groupExercises.map((exercise) => (
                                     <div key={exercise.id} className="bg-white overflow-hidden shadow-sm rounded-lg relative">
-                                        <Link
-                                            href={route('exercises.edit', exercise.id)}
-                                            className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded-md text-sm"
-                                        >
-                                            Editar
-                                        </Link>
+                                        <div className="absolute top-2 right-2 flex gap-2">
+                                            <Link
+                                                href={route('exercises.edit', exercise.id)}
+                                                className="bg-blue-500 text-white px-2 py-1 rounded-md text-sm"
+                                            >
+                                                Editar
+                                            </Link>
+                                            <Link
+                                                href={route('trends.show', exercise.id)}
+                                                className="bg-green-500 text-white px-2 py-1 rounded-md text-sm"
+                                            >
+                                                Tendencias
+                                            </Link>
+                                        </div>
                                         <div className="p-6">
                                             <div className="flex items-center gap-4">
                                                 {exercise.image_url && (
