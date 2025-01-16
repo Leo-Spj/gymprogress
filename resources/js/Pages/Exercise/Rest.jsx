@@ -4,8 +4,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import axios from 'axios';
 
 export default function Rest({ auth, exercise }) {
-    const [timeLeft, setTimeLeft] = useState(4);
-    const [isActive, setIsActive] = useState(true);
+    const [selectedMinutes, setSelectedMinutes] = useState(3);
+    const [selectedSeconds, setSelectedSeconds] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(null);
+    const [isActive, setIsActive] = useState(false);
+    const [showSelector, setShowSelector] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [exerciseStartTime, setExerciseStartTime] = useState(null);
     const [formData, setFormData] = useState({
@@ -56,6 +59,39 @@ export default function Rest({ auth, exercise }) {
         }
     };
 
+    const startTimer = () => {
+        setTimeLeft(selectedMinutes * 60 + selectedSeconds);
+        setIsActive(true);
+        setShowSelector(false);
+    };
+
+    const skipRest = () => {
+        setTimeLeft(0);
+        setIsActive(false);
+    };
+
+    const NumberWheel = ({ value, onChange, max }) => {
+        const numbers = Array.from({ length: max + 1 }, (_, i) => i);
+        
+        return (
+            <div className="h-32 overflow-y-scroll scrollbar-hidden relative">
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white via-transparent to-white"/>
+                <div className="py-12">
+                    {numbers.map(num => (
+                        <div
+                            key={num}
+                            onClick={() => onChange(num)}
+                            className={`h-8 flex items-center justify-center cursor-pointer
+                                ${value === num ? 'text-2xl font-bold text-blue-600' : 'text-gray-400'}`}
+                        >
+                            {num.toString().padStart(2, '0')}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="py-12">
@@ -64,25 +100,68 @@ export default function Rest({ auth, exercise }) {
                         <div className="p-6">
                             <h2 className="text-2xl font-semibold mb-4">Tiempo de Descanso</h2>
                             <div className="text-center">
-                                <div className="text-6xl font-bold mb-8">{formatTime(timeLeft)}</div>
-                                {timeLeft === 0 && (
-                                    <div className="space-x-4">
+                                {showSelector ? (
+                                    <>
+                                        <div className="flex justify-center items-center gap-4 mb-8">
+                                            <div className="w-20">
+                                                <NumberWheel
+                                                    value={selectedMinutes}
+                                                    onChange={setSelectedMinutes}
+                                                    max={10}
+                                                />
+                                                <div className="text-sm text-gray-500">minutos</div>
+                                            </div>
+                                            <div className="text-2xl font-bold">:</div>
+                                            <div className="w-20">
+                                                <NumberWheel
+                                                    value={selectedSeconds}
+                                                    onChange={setSelectedSeconds}
+                                                    max={59}
+                                                />
+                                                <div className="text-sm text-gray-500">segundos</div>
+                                            </div>
+                                        </div>
                                         <button
-                                            onClick={() => {
-                                                handleStartExercise();
-                                                setShowModal(true);
-                                            }}
-                                            className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600"
-                                        >
-                                            Registrar Set
-                                        </button>
-                                        <button
-                                            onClick={() => {setTimeLeft(60); setIsActive(true);}}
+                                            onClick={startTimer}
                                             className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600"
                                         >
-                                            Reiniciar Descanso
+                                            Iniciar Descanso
                                         </button>
-                                    </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="text-6xl font-bold mb-8">{formatTime(timeLeft)}</div>
+                                        {timeLeft > 0 && (
+                                            <button
+                                                onClick={skipRest}
+                                                className="bg-gray-500 text-white px-6 py-3 rounded-md hover:bg-gray-600 mb-4"
+                                            >
+                                                Saltar Descanso
+                                            </button>
+                                        )}
+                                        {timeLeft === 0 && (
+                                            <div className="space-x-4">
+                                                <button
+                                                    onClick={() => {
+                                                        handleStartExercise();
+                                                        setShowModal(true);
+                                                    }}
+                                                    className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600"
+                                                >
+                                                    Registrar Set
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowSelector(true);
+                                                        setIsActive(false);
+                                                    }}
+                                                    className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600"
+                                                >
+                                                    Nuevo Descanso
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
 
