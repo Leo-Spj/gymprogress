@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { FaDumbbell, FaChartLine, FaRegCalendarCheck } from 'react-icons/fa'; // Añadir íconos
+import { FaDumbbell, FaChartLine, FaRegCalendarCheck, FaMobileAlt } from 'react-icons/fa'; // Añadir íconos
 
 export default function Welcome({ auth }) {
     return (
@@ -69,6 +69,17 @@ export default function Welcome({ auth }) {
                                     Ver Funciones
                                 </Link> */}
                             </div>
+                        </div>
+
+                        {/* PWA Section */}
+                        <div className="text-center px-4 py-8 md:px-6 md:py-16 bg-white bg-opacity-90 rounded-lg shadow-xl w-[95%] md:w-11/12 max-w-3xl mx-4 mt-8">
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+                                <FaMobileAlt className="inline-block text-blue-500 mr-2" />
+                                ¡Novedad!
+                            </h2>
+                            <p className="text-lg md:text-xl text-gray-700 mb-6 md:mb-8 max-w-2xl mx-auto px-2">
+                                Ahora puedes instalar GymProgress como una aplicación en tu celular. Abre esta página en tu navegador y sigue las instrucciones para agregarla a tu pantalla de inicio.
+                            </p>
                         </div>
 
                         {/* Feature Grid - Optimizado para móvil */}
