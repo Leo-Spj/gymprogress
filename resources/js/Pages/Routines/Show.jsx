@@ -4,6 +4,42 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
 
+const getTypeLabel = (type) => {
+    const types = {
+        'strength': 'Fuerza',
+        'cardio': 'Cardio',
+        'flexibility': 'Flexibilidad',
+        'balance': 'Equilibrio',
+        'general': 'General',
+        'pectorals': 'Pectorales',
+        'biceps': 'Bíceps',
+        'triceps': 'Tríceps',
+        'back': 'Espalda',
+        'legs': 'Piernas',
+        'shoulders': 'Hombros',
+        'abs': 'Abdominales'
+    };
+    return types[type] || type;
+};
+
+const getTypeColor = (type) => {
+    const colors = {
+        'strength': 'bg-red-100 text-red-800',
+        'cardio': 'bg-blue-100 text-blue-800',
+        'flexibility': 'bg-green-100 text-green-800',
+        'balance': 'bg-purple-100 text-purple-800',
+        'general': 'bg-gray-100 text-gray-800',
+        'pectorals': 'bg-pink-100 text-pink-800',
+        'biceps': 'bg-yellow-100 text-yellow-800',
+        'triceps': 'bg-orange-100 text-orange-800',
+        'back': 'bg-teal-100 text-teal-800',
+        'legs': 'bg-indigo-100 text-indigo-800',
+        'shoulders': 'bg-lime-100 text-lime-800',
+        'abs': 'bg-cyan-100 text-cyan-800'
+    };
+    return colors[type] || 'bg-gray-100 text-gray-800';
+};
+
 export default function Show({ auth, routine }) {
     const [exercises, setExercises] = useState(routine.exercises);
 
@@ -109,24 +145,35 @@ export default function Show({ auth, routine }) {
                                                                         <img 
                                                                             src={exercise.image_url} 
                                                                             alt={exercise.name}
-                                                                            className="w-12 h-12 object-cover rounded-lg mr-3"
+                                                                            className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
                                                                         />
                                                                     ) : (
                                                                         exercise.image_path && (
                                                                             <img 
                                                                                 src={`/storage/${exercise.image_path}`} 
                                                                                 alt={exercise.name}
-                                                                                className="w-12 h-12 object-cover rounded-lg mr-3"
+                                                                                className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
                                                                             />
                                                                         )
                                                                     )}
-                                                                    <div>
-                                                                        <p className="text-gray-600 text-sm">
-                                                                            <span className="font-medium">Nombre:</span> {exercise.name}
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <p className="text-gray-900 text-sm font-medium truncate">
+                                                                            {exercise.name}
                                                                         </p>
-                                                                        <p className="text-gray-600 text-sm">
-                                                                            <span className="font-medium">Tipo:</span> {exercise.type}
-                                                                        </p>
+                                                                        <div className="flex flex-wrap gap-1">
+                                                                            {Array.isArray(exercise.type) 
+                                                                                ? exercise.type.map((type, index) => (
+                                                                                    <span key={index} className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(type)}`}>
+                                                                                        {getTypeLabel(type)}
+                                                                                    </span>
+                                                                                ))
+                                                                                : (
+                                                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTypeColor(exercise.type)}`}>
+                                                                                        {getTypeLabel(exercise.type)}
+                                                                                    </span>
+                                                                                )
+                                                                            }
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="grid grid-cols-2 gap-2">
