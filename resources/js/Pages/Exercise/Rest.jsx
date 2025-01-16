@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import axios from 'axios';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 
 export default function Rest({ auth, exercise }) {
-    const [selectedMinutes, setSelectedMinutes] = useState(3);
-    const [selectedSeconds, setSelectedSeconds] = useState(0);
+    const [selectedTime, setSelectedTime] = useState(dayjs().hour(0).minute(3).second(0));
     const [timeLeft, setTimeLeft] = useState(null);
     const [isActive, setIsActive] = useState(false);
     const [showSelector, setShowSelector] = useState(true);
@@ -60,7 +63,9 @@ export default function Rest({ auth, exercise }) {
     };
 
     const startTimer = () => {
-        setTimeLeft(selectedMinutes * 60 + selectedSeconds);
+        const minutes = selectedTime.minute();
+        const seconds = selectedTime.second();
+        setTimeLeft(minutes * 60 + seconds);
         setIsActive(true);
         setShowSelector(false);
     };
@@ -68,85 +73,6 @@ export default function Rest({ auth, exercise }) {
     const skipRest = () => {
         setTimeLeft(0);
         setIsActive(false);
-    };
-
-    const NumberWheel = ({ value, onChange, max }) => {
-        const numbers = Array.from({ length: max + 1 }, (_, i) => i);
-        const itemHeight = 40; // Aumentado de 32 a 40
-        const containerRef = React.useRef(null);
-
-        const adjustValue = (increment) => {
-            const newValue = increment ? 
-                Math.min(value + 1, max) : 
-                Math.max(value - 1, 0);
-            onChange(newValue);
-            containerRef.current?.scrollTo({
-                top: newValue * itemHeight,
-                behavior: 'smooth'
-            });
-        };
-
-        useEffect(() => {
-            if (containerRef.current) {
-                containerRef.current.scrollTop = value * itemHeight;
-            }
-        }, []);
-
-        const handleScroll = (e) => {
-            clearTimeout(e.target.scrollTimeout);
-            e.target.scrollTimeout = setTimeout(() => {
-                const scrollTop = e.target.scrollTop;
-                const selectedIndex = Math.round(scrollTop / itemHeight);
-                if (selectedIndex !== value && selectedIndex >= 0 && selectedIndex <= max) {
-                    onChange(selectedIndex);
-                    e.target.scrollTo({
-                        top: selectedIndex * itemHeight,
-                        behavior: 'smooth'
-                    });
-                }
-            }, 100);
-        };
-
-        return (
-            <div className="relative h-40 border rounded-lg select-none"> {/* Aumentado de h-32 a h-40 */}
-                {/* Botones de ajuste */}
-                <button 
-                    onClick={() => adjustValue(true)}
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center text-blue-500 hover:text-blue-600 z-10"
-                >
-                    ▲
-                </button>
-                <button 
-                    onClick={() => adjustValue(false)}
-                    className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center text-blue-500 hover:text-blue-600 z-10"
-                >
-                    ▼
-                </button>
-
-                {/* Indicador del centro */}
-                <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <div className="h-10 border-t-2 border-b-2 border-blue-300 bg-blue-50/30"/>
-                </div>
-                
-                <div 
-                    ref={containerRef}
-                    className="h-full overflow-y-scroll scrollbar-hidden touch-pan-y"
-                    onScroll={handleScroll}
-                >
-                    <div className="h-[80px]"/> {/* Aumentado el padding */}
-                    {numbers.map(num => (
-                        <div
-                            key={num}
-                            className={`h-10 flex items-center justify-center transition-all duration-150 text-lg
-                                ${value === num ? 'font-bold text-blue-600 scale-110' : 'text-gray-400'}`}
-                        >
-                            {num.toString().padStart(2, '0')}
-                        </div>
-                    ))}
-                    <div className="h-[80px]"/> {/* Aumentado el padding */}
-                </div>
-            </div>
-        );
     };
 
     return (
@@ -160,23 +86,15 @@ export default function Rest({ auth, exercise }) {
                                 {showSelector ? (
                                     <>
                                         <div className="flex justify-center items-center gap-4 mb-8">
-                                            <div className="w-20">
-                                                <NumberWheel
-                                                    value={selectedMinutes}
-                                                    onChange={setSelectedMinutes}
-                                                    max={10}
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <TimePicker
+                                                    value={selectedTime}
+                                                    onChange={(newValue) => setSelectedTime(newValue)}
+                                                    views={['minutes', 'seconds']}
+                                                    format="mm:ss"
+                                                    ampm={false}
                                                 />
-                                                <div className="text-sm text-gray-500">minutos</div>
-                                            </div>
-                                            <div className="text-2xl font-bold">:</div>
-                                            <div className="w-20">
-                                                <NumberWheel
-                                                    value={selectedSeconds}
-                                                    onChange={setSelectedSeconds}
-                                                    max={59}
-                                                />
-                                                <div className="text-sm text-gray-500">segundos</div>
-                                            </div>
+                                            </LocalizationProvider>
                                         </div>
                                         <button
                                             onClick={startTimer}
