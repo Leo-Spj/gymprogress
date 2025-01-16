@@ -5,20 +5,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
 
 export default function Show({ auth, routine }) {
-    const { delete: destroy } = useForm();
     const [exercises, setExercises] = useState(routine.exercises);
-
-    const handleDelete = () => {
-        if (confirm('¿Estás seguro de que quieres eliminar esta rutina?')) {
-            destroy(route('routines.destroy', routine.id));
-        }
-    };
-
-    const handleRemove = (exerciseId) => {
-        if (confirm('¿Estás seguro de que quieres eliminar este ejercicio de la rutina?')) {
-            destroy(route('routines.removeExercise', { routine: routine.id, exercise: exerciseId }));
-        }
-    };
 
     const handleDragEnd = (result) => {
         if (!result.destination) return;
@@ -74,12 +61,6 @@ export default function Show({ auth, routine }) {
                                     >
                                         Volver
                                     </Link>
-                                    <button
-                                        onClick={handleDelete}
-                                        className="bg-red-500 text-white px-4 py-2 rounded-md"
-                                    >
-                                        Eliminar
-                                    </button>
                                 </div>
                             </div>
 
@@ -140,12 +121,6 @@ export default function Show({ auth, routine }) {
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <button
-                                                                    onClick={() => handleRemove(exercise.id)}
-                                                                    className="bg-red-500 text-white px-4 py-2 rounded-md"
-                                                                >
-                                                                    Eliminar
-                                                                </button>
                                                             </div>
                                                         )}
                                                     </Draggable>
@@ -158,14 +133,7 @@ export default function Show({ auth, routine }) {
                                 </DragDropContext>
                             </div>
 
-                            <div className="flex justify-end">
-                                <Link
-                                    href={route('routines.showAddExerciseForm', routine.id)}
-                                    className="bg-green-500 text-white px-4 py-2 rounded-md"
-                                >
-                                    Añadir Ejercicio
-                                </Link>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
