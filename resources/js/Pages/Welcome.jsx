@@ -62,12 +62,12 @@ export default function Welcome({ auth }) {
                                         Comienza Ahora
                                     </Link>
                                 )}
-                                <Link
+                                {/* <Link
                                     href="#features"
                                     className="w-full md:w-auto bg-white text-blue-600 border border-blue-600 px-6 py-3 rounded-md text-base md:text-lg font-semibold hover:bg-blue-100"
                                 >
                                     Ver Funciones
-                                </Link>
+                                </Link> */}
                             </div>
                         </div>
 
