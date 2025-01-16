@@ -40,56 +40,61 @@ export default function Index({ auth, routines }) {
         <AuthenticatedLayout user={auth.user}>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-semibold">Mis Rutinas</h2>
-                        <Link
-                            href={route('routines.create')}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                        >
-                            Nueva Rutina
-                        </Link>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {routines.map((routine) => (
-                            <div key={routine.id} className="bg-white overflow-hidden shadow-sm rounded-lg relative">
-                                <Link
-                                    href={route('routines.edit', routine.id)}
-                                    className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded-md text-sm"
-                                >
-                                    Editar
-                                </Link>
-                                <div className="p-6">
-                                    <h3 className="text-lg font-medium">{routine.name}</h3>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {routine.days.map(day => (
-                                            <span 
-                                                key={day} 
-                                                className={`
-                                                    text-xs px-2 py-1 rounded-full
-                                                    ${day.toLowerCase() === currentDay 
-                                                        ? 'bg-green-500 text-white font-bold' 
-                                                        : 'bg-gray-100'
-                                                    }
-                                                `}
-                                            >
-                                                {translateDay(day)}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <p className="text-gray-600 mt-2">
-                                        {routine.exercises.length} ejercicios
-                                    </p>
-                                    <div className="mt-4">
+                    <div className="bg-white overflow-hidden shadow-sm rounded-lg">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-semibold">Mis Rutinas</h2>
+                                <div className="space-x-4">
+                                    <Link
+                                        href={route('routines.create')}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                    >
+                                        Nueva Rutina
+                                    </Link>
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {routines.map((routine) => (
+                                    <div key={routine.id} className="bg-white p-3 rounded-lg shadow-sm relative">
+                                        <Link
+                                            href={route('routines.edit', routine.id)}
+                                            className="absolute top-3 right-3 bg-blue-500 text-white px-2 py-1 rounded-md text-sm hover:bg-blue-600"
+                                        >
+                                            Editar
+                                        </Link>
+                                        <div className="mb-3">
+                                            <h3 className="text-lg font-medium mb-2">{routine.name}</h3>
+                                            <div className="flex flex-wrap gap-2 mb-2">
+                                                {routine.days.map(day => (
+                                                    <span 
+                                                        key={day} 
+                                                        className={`
+                                                            text-xs px-2 py-1 rounded-full
+                                                            ${day.toLowerCase() === currentDay 
+                                                                ? 'bg-green-500 text-white font-bold' 
+                                                                : 'bg-gray-100'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {translateDay(day)}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <p className="text-gray-600 text-sm">
+                                                {routine.exercises.length} ejercicios
+                                            </p>
+                                        </div>
                                         <button
                                             onClick={() => handleTrain(routine.id)}
-                                            className="bg-green-500 text-white px-4 py-2 rounded-md w-full"
+                                            className="bg-green-500 text-white py-1.5 px-3 rounded-md w-full hover:bg-green-600 text-sm"
                                         >
                                             Entrenar
                                         </button>
                                     </div>
-                                </div>
+                                ))}
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
             </div>
