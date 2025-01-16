@@ -55,6 +55,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/seguimiento', [WorkoutController::class, 'store'])->name('tracking.store');
     Route::post('/workouts', [WorkoutController::class, 'store'])->name('workouts.store'); // Añadir esta línea
 
+    // Modificar las rutas de workouts
+    Route::post('/workouts/get-or-create', [WorkoutController::class, 'getOrCreate'])->name('workouts.getOrCreate');
+
     // // Rutas para configuraciones de descanso
     // Route::get('/configuracion/descanso', [RestConfigController::class, 'edit'])->name('rest.edit');
     // Route::put('/configuracion/descanso', [RestConfigController::class, 'update'])->name('rest.update');

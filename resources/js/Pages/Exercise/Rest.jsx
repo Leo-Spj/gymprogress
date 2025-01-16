@@ -49,13 +49,19 @@ export default function Rest({ auth, exercise }) {
         const duration = Math.floor((Date.now() - exerciseStartTime) / 1000);
         
         try {
+            // Primero obtenemos el workout del día actual o creamos uno nuevo
+            const workoutResponse = await axios.post(route('workouts.getOrCreate'));
+            const workoutId = workoutResponse.data.id;
+
+            // Ahora registramos el set usando el workout_id obtenido
             await axios.post(route('exercise.finish', exercise.id), {
                 ...formData,
-                duration_seconds: duration
+                duration_seconds: duration,
+                workout_id: workoutId
             });
             
             setShowModal(false);
-            // Opcional: redirigir al usuario o mostrar mensaje de éxito
+            // Opcional: redirigir o mostrar mensaje de éxito
         } catch (error) {
             console.error('Error al guardar el set:', error);
             alert('Error al guardar el set');

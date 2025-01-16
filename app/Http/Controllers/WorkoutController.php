@@ -52,4 +52,20 @@ class WorkoutController extends Controller
         $workout->delete();
         return response()->json(null, 204);
     }
+
+    public function getOrCreate()
+    {
+        $user = auth()->user();
+        $today = now()->toDateString();
+
+        $workout = $user->workouts()
+            ->whereDate('workout_date', $today)
+            ->first();
+
+        if (!$workout) {
+            $workout = $user->workouts()->create(['workout_date' => $today]);
+        }
+
+        return response()->json($workout);
+    }
 }
