@@ -72,21 +72,78 @@ export default function Rest({ auth, exercise }) {
 
     const NumberWheel = ({ value, onChange, max }) => {
         const numbers = Array.from({ length: max + 1 }, (_, i) => i);
-        
+        const itemHeight = 40; // Aumentado de 32 a 40
+        const containerRef = React.useRef(null);
+
+        const adjustValue = (increment) => {
+            const newValue = increment ? 
+                Math.min(value + 1, max) : 
+                Math.max(value - 1, 0);
+            onChange(newValue);
+            containerRef.current?.scrollTo({
+                top: newValue * itemHeight,
+                behavior: 'smooth'
+            });
+        };
+
+        useEffect(() => {
+            if (containerRef.current) {
+                containerRef.current.scrollTop = value * itemHeight;
+            }
+        }, []);
+
+        const handleScroll = (e) => {
+            clearTimeout(e.target.scrollTimeout);
+            e.target.scrollTimeout = setTimeout(() => {
+                const scrollTop = e.target.scrollTop;
+                const selectedIndex = Math.round(scrollTop / itemHeight);
+                if (selectedIndex !== value && selectedIndex >= 0 && selectedIndex <= max) {
+                    onChange(selectedIndex);
+                    e.target.scrollTo({
+                        top: selectedIndex * itemHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 100);
+        };
+
         return (
-            <div className="h-32 overflow-y-scroll scrollbar-hidden relative">
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white via-transparent to-white"/>
-                <div className="py-12">
+            <div className="relative h-40 border rounded-lg select-none"> {/* Aumentado de h-32 a h-40 */}
+                {/* Botones de ajuste */}
+                <button 
+                    onClick={() => adjustValue(true)}
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center text-blue-500 hover:text-blue-600 z-10"
+                >
+                    ▲
+                </button>
+                <button 
+                    onClick={() => adjustValue(false)}
+                    className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center text-blue-500 hover:text-blue-600 z-10"
+                >
+                    ▼
+                </button>
+
+                {/* Indicador del centro */}
+                <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <div className="h-10 border-t-2 border-b-2 border-blue-300 bg-blue-50/30"/>
+                </div>
+                
+                <div 
+                    ref={containerRef}
+                    className="h-full overflow-y-scroll scrollbar-hidden touch-pan-y"
+                    onScroll={handleScroll}
+                >
+                    <div className="h-[80px]"/> {/* Aumentado el padding */}
                     {numbers.map(num => (
                         <div
                             key={num}
-                            onClick={() => onChange(num)}
-                            className={`h-8 flex items-center justify-center cursor-pointer
-                                ${value === num ? 'text-2xl font-bold text-blue-600' : 'text-gray-400'}`}
+                            className={`h-10 flex items-center justify-center transition-all duration-150 text-lg
+                                ${value === num ? 'font-bold text-blue-600 scale-110' : 'text-gray-400'}`}
                         >
                             {num.toString().padStart(2, '0')}
                         </div>
                     ))}
+                    <div className="h-[80px]"/> {/* Aumentado el padding */}
                 </div>
             </div>
         );
