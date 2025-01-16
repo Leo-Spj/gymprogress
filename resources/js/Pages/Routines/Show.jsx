@@ -27,6 +27,7 @@ export default function Show({ auth, routine }) {
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
+        // Actualizar el estado optimistamente
         setExercises(items);
 
         const updatedExercises = items.map((exercise, index) => ({
@@ -36,9 +37,19 @@ export default function Show({ auth, routine }) {
 
         axios.put(route('routines.updateExercisesOrder', routine.id), {
             exercises: updatedExercises
-        }).catch(() => {
+        })
+        .then(response => {
+            // Actualizar el estado con los datos del servidor
+            if (response.data.exercises) {
+                setExercises(response.data.exercises);
+            }
+        })
+        .catch(error => {
+            // Revertir al estado anterior en caso de error
             setExercises(routine.exercises);
-            alert('Error al actualizar el orden');
+            console.error('Error al actualizar el orden:', error);
+            // Opcional: Mostrar un mensaje de error más amigable
+            alert('Ha ocurrido un error al actualizar el orden. Por favor, inténtalo de nuevo.');
         });
     };
 

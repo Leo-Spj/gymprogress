@@ -175,22 +175,19 @@ class RoutineController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-            
             foreach ($validated['exercises'] as $exercise) {
                 $routine->exercises()->updateExistingPivot(
                     $exercise['id'],
                     ['order_index' => $exercise['order_index']]
                 );
             }
-            
-            DB::commit();
-            
-            return back();
-            
+
+            return response()->json([
+                'message' => 'Orden actualizado correctamente',
+                'exercises' => $routine->exercises()->orderBy('routine_exercises.order_index')->get()
+            ]);
         } catch (\Exception $e) {
-            DB::rollback();
-            return back()->with('error', 'Error al actualizar el orden');
+            return response()->json(['error' => 'Error al actualizar el orden'], 500);
         }
     }
 }
