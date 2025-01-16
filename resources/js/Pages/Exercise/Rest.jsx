@@ -9,9 +9,9 @@ import dayjs from 'dayjs';
 
 export default function Rest({ auth, exercise }) {
     const [selectedTime, setSelectedTime] = useState(dayjs().hour(0).minute(3).second(0));
-    const [timeLeft, setTimeLeft] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(0);
     const [isActive, setIsActive] = useState(false);
-    const [showSelector, setShowSelector] = useState(true);
+    const [showSelector, setShowSelector] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [exerciseStartTime, setExerciseStartTime] = useState(null);
     const [formData, setFormData] = useState({
