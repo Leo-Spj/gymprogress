@@ -142,11 +142,12 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData }) 
     const handleDelete = async (setId) => {
         if (confirm('¿Estás seguro de que deseas eliminar este set?')) {
             try {
-                await axios.delete(route('workout-sets.destroy', setId));
+                // Usar la URL directa en lugar de route()
+                await axios.delete(`/workout-sets/${setId}`);
                 setTrendsData(trendsData.filter(set => set.id !== setId));
             } catch (error) {
-                console.error('Error al eliminar el set:', error);
-                alert('Error al eliminar el set');
+                console.error('Error al eliminar el set:', error.response?.data || error);
+                alert('Error al eliminar el set: ' + (error.response?.data?.message || 'Error desconocido'));
             }
         }
     };

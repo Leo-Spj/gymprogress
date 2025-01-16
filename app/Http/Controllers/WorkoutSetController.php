@@ -49,8 +49,16 @@ class WorkoutSetController extends Controller
 
     public function destroy(WorkoutSet $set)
     {
-        $this->authorize('delete', $set->workout);
-        $set->delete();
-        return response()->json(null, 204);
+        // Verificar que el workout pertenece al usuario actual
+        if ($set->workout->user_id !== auth()->id()) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        try {
+            $set->delete();
+            return response()->json(['message' => 'Set eliminado correctamente'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al eliminar el set'], 500);
+        }
     }
 }
