@@ -19,6 +19,21 @@ export default function Rest({ auth, exercise }) {
         reps: '',
         duration_seconds: 0
     });
+    const [audio] = useState(new Audio('/sounds/beep.mp3')); // Cambia a tu archivo local
+
+    useEffect(() => {
+        // Precarga el audio
+        audio.load();
+        
+        // Maneja errores de audio
+        audio.addEventListener('error', (e) => {
+            console.error('Error loading audio:', e);
+        });
+
+        return () => {
+            audio.removeEventListener('error', () => {});
+        };
+    }, [audio]);
 
     useEffect(() => {
         let intervalId;
@@ -27,12 +42,26 @@ export default function Rest({ auth, exercise }) {
             intervalId = setInterval(() => {
                 setTimeLeft(timeLeft - 1);
             }, 1000);
-        } else if (timeLeft === 0) {
+        } else if (timeLeft === 0 && isActive) {
+            try {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => {
+                            // Audio started playing
+                        })
+                        .catch(error => {
+                            console.error("Error playing audio:", error);
+                        });
+                }
+            } catch (error) {
+                console.error("Error playing audio:", error);
+            }
             setIsActive(false);
         }
 
         return () => clearInterval(intervalId);
-    }, [timeLeft, isActive]);
+    }, [timeLeft, isActive, audio]);
 
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
