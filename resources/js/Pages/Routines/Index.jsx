@@ -5,6 +5,27 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 export default function Index({ auth, routines }) {
     const { delete: destroy, post } = useForm();
 
+    const getCurrentDay = () => {
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const currentDay = new Date().getDay();
+        return days[currentDay];
+    };
+
+    const translateDay = (day) => {
+        const translations = {
+            'monday': 'Lunes',
+            'tuesday': 'Martes',
+            'wednesday': 'Miércoles',
+            'thursday': 'Jueves',
+            'friday': 'Viernes',
+            'saturday': 'Sábado',
+            'sunday': 'Domingo'
+        };
+        return translations[day.toLowerCase()] || day;
+    };
+
+    const currentDay = getCurrentDay();
+
     const handleDelete = (id) => {
         if (confirm('¿Estás seguro de que quieres eliminar esta rutina?')) {
             destroy(route('routines.destroy', id));
@@ -41,8 +62,17 @@ export default function Index({ auth, routines }) {
                                     <h3 className="text-lg font-medium">{routine.name}</h3>
                                     <div className="flex flex-wrap gap-2 mt-2">
                                         {routine.days.map(day => (
-                                            <span key={day} className="text-xs px-2 py-1 bg-gray-100 rounded-full capitalize">
-                                                {day}
+                                            <span 
+                                                key={day} 
+                                                className={`
+                                                    text-xs px-2 py-1 rounded-full
+                                                    ${day.toLowerCase() === currentDay 
+                                                        ? 'bg-green-500 text-white font-bold' 
+                                                        : 'bg-gray-100'
+                                                    }
+                                                `}
+                                            >
+                                                {translateDay(day)}
                                             </span>
                                         ))}
                                     </div>
