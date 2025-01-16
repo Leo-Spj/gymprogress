@@ -38,14 +38,15 @@ class ExerciseExecutionController extends Controller
             abort(403);
         }
 
-        $workout->sets()->create([
+        $set = $workout->sets()->create([
             'exercise_id' => $exercise->id,
             'weight' => $validated['weight'],
             'reps' => $validated['reps'],
             'duration_seconds' => $validated['duration_seconds']
         ]);
 
-        return response()->json(['message' => 'Set registrado correctamente']);
+        // Devolver el set creado con sus relaciones
+        return response()->json($set->fresh());
     }
 
     public function rest(Exercise $exercise)

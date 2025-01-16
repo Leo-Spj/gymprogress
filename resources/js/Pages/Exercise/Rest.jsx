@@ -81,19 +81,26 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData }) 
         const duration = Math.floor((Date.now() - exerciseStartTime) / 1000);
         
         try {
-            // Primero obtenemos el workout del día actual o creamos uno nuevo
             const workoutResponse = await axios.post(route('workouts.getOrCreate'));
             const workoutId = workoutResponse.data.id;
 
-            // Ahora registramos el set usando el workout_id obtenido
-            await axios.post(route('exercise.finish', exercise.id), {
+            const response = await axios.post(route('exercise.finish', exercise.id), {
                 ...formData,
                 duration_seconds: duration,
                 workout_id: workoutId
             });
-            
+
+            // Agregar el nuevo set al inicio de trendsData
+            const newSet = {
+                id: response.data.id,
+                weight: parseFloat(formData.weight),
+                reps: parseInt(formData.reps),
+                date: new Date().toISOString()
+            };
+
+            setTrendsData([newSet, ...trendsData]);
+            setFormData({ weight: '', reps: '', duration_seconds: 0 });
             setShowModal(false);
-            // Opcional: redirigir o mostrar mensaje de éxito
         } catch (error) {
             console.error('Error al guardar el set:', error);
             alert('Error al guardar el set');
@@ -116,7 +123,6 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData }) 
     const handleEdit = async (e) => {
         e.preventDefault();
         try {
-            // Convertir los valores a números
             const updatedSet = {
                 ...editingSet,
                 reps: parseInt(editingSet.reps),
@@ -127,14 +133,19 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData }) 
             const response = await axios.put(`/workout-sets/${editingSet.id}`, updatedSet);
 
             if (response.data) {
-                // Actualizar el estado local con los datos actualizados
+                // Mantener la fecha original al actualizar el estado
+                const updatedData = {
+                    ...response.data,
+                    date: editingSet.date
+                };
+                
                 setTrendsData(trendsData.map(set => 
-                    set.id === editingSet.id ? response.data : set
+                    set.id === editingSet.id ? updatedData : set
                 ));
                 setShowEditModal(false);
             }
         } catch (error) {
-            console.error('Error al actualizar el set:', error.response?.data || error);
+            console.error('Error al actualizar el set:', error);
             alert('Error al actualizar el set: ' + (error.response?.data?.message || 'Error desconocido'));
         }
     };
