@@ -105,12 +105,20 @@ export default function Show({ auth, routine }) {
                                                                     >
                                                                         ⋮⋮
                                                                     </div>
-                                                                    {exercise.image_url && (
+                                                                    {exercise.image_url ? (
                                                                         <img 
                                                                             src={exercise.image_url} 
                                                                             alt={exercise.name}
                                                                             className="w-16 h-16 object-cover rounded-lg mr-4"
                                                                         />
+                                                                    ) : (
+                                                                        exercise.image_path && (
+                                                                            <img 
+                                                                                src={`/storage/${exercise.image_path}`} 
+                                                                                alt={exercise.name}
+                                                                                className="w-16 h-16 object-cover rounded-lg mr-4"
+                                                                            />
+                                                                        )
                                                                     )}
                                                                     <div>
                                                                         <p className="text-gray-600">
