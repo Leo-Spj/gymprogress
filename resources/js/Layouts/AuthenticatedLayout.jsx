@@ -13,7 +13,8 @@ export default function AuthenticatedLayout({ header, children }) {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
+            {/* Desktop navigation */}
+            <nav className="border-b border-gray-100 bg-white hidden sm:block">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
@@ -182,7 +183,70 @@ export default function AuthenticatedLayout({ header, children }) {
                 </header>
             )}
 
-            <main>{children}</main>
+            <main className="pb-16 sm:pb-0">{children}</main>
+
+            {/* Mobile bottom navigation */}
+            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 sm:hidden pb-2">
+                <div className="flex justify-around items-center h-16">
+                    <Link
+                        href={route('routines.index')}
+                        className={`flex flex-col items-center px-4 py-2 text-sm ${
+                            route().current('routines.*') 
+                            ? 'text-indigo-600' 
+                            : 'text-gray-600'
+                        }`}
+                    >
+                        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        Rutinas
+                    </Link>
+
+                    <Link
+                        href={route('exercises.index')}
+                        className={`flex flex-col items-center px-4 py-2 text-sm ${
+                            route().current('exercises.*') 
+                            ? 'text-indigo-600' 
+                            : 'text-gray-600'
+                        }`}
+                    >
+                        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                        Ejercicios
+                    </Link>
+
+                    <button
+                        onClick={() => setShowingNavigationDropdown(!showingNavigationDropdown)}
+                        className="flex flex-col items-center px-4 py-2 text-sm text-gray-600"
+                    >
+                        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                        Menú
+                    </button>
+                </div>
+
+                {/* Mobile menu dropdown */}
+                {showingNavigationDropdown && (
+                    <div className="absolute bottom-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
+                        <div className="py-2">
+                            <div className="px-4 py-2">
+                                <div className="text-base font-medium text-gray-800">{user.name}</div>
+                                <div className="text-sm font-medium text-gray-500">{user.email}</div>
+                            </div>
+                            <div className="border-t border-gray-200">
+                                <ResponsiveNavLink href={route('profile.edit')}>
+                                    Perfil
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink method="post" href={route('logout')} as="button">
+                                    Cerrar Sesión
+                                </ResponsiveNavLink>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </nav>
         </div>
     );
 }
