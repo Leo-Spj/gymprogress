@@ -3,6 +3,7 @@ import { Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
+import { FaDumbbell } from 'react-icons/fa';
 
 const getTypeLabel = (type) => {
     const types = {
@@ -176,14 +177,16 @@ export default function Show({ auth, routine }) {
                                                                             alt={exercise.name}
                                                                             className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
                                                                         />
+                                                                    ) : exercise.image_path ? (
+                                                                        <img 
+                                                                            src={`/storage/${exercise.image_path}`} 
+                                                                            alt={exercise.name}
+                                                                            className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
+                                                                        />
                                                                     ) : (
-                                                                        exercise.image_path && (
-                                                                            <img 
-                                                                                src={`/storage/${exercise.image_path}`} 
-                                                                                alt={exercise.name}
-                                                                                className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
-                                                                            />
-                                                                        )
+                                                                        <div className="w-12 h-12 bg-gray-100 rounded-lg mr-3 flex-shrink-0 flex items-center justify-center">
+                                                                            <FaDumbbell className="text-gray-400 text-2xl" />
+                                                                        </div>
                                                                     )}
                                                                     <div className="min-w-0 flex-1">
                                                                         <p className="text-gray-900 text-sm font-medium truncate">
