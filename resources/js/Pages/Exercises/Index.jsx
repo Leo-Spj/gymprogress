@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from '@inertiajs/react';
-import { FaDumbbell } from 'react-icons/fa';
+import { FaDumbbell, FaPlus, FaEdit, FaChartLine } from 'react-icons/fa';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Index({ auth, exercises }) {
@@ -79,9 +79,10 @@ export default function Index({ auth, exercises }) {
                                 <div className="space-x-4">
                                     <Link
                                         href={route('exercises.create')}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                        className="bg-blue-500 text-white w-10 h-10 rounded-md hover:bg-blue-600 flex items-center justify-center"
+                                        title="Nuevo Ejercicio"
                                     >
-                                        Nuevo Ejercicio
+                                        <FaPlus className="text-xl" />
                                     </Link>
                                 </div>
                             </div>
@@ -140,15 +141,17 @@ export default function Index({ auth, exercises }) {
                                         <div className="grid grid-cols-2 gap-2">
                                             <Link
                                                 href={route('exercises.edit', exercise.id)}
-                                                className="bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 text-center text-sm"
+                                                className="bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-600 text-center flex items-center justify-center"
+                                                title="Editar"
                                             >
-                                                Editar
+                                                <FaEdit />
                                             </Link>
                                             <Link
                                                 href={route('trends.show', exercise.id)}
-                                                className="bg-green-500 text-white py-1.5 px-3 rounded-md hover:bg-green-600 text-center text-sm"
+                                                className="bg-green-500 text-white py-2 px-3 rounded-md hover:bg-green-600 text-center flex items-center justify-center"
+                                                title="Tendencias"
                                             >
-                                                Tendencias
+                                                <FaChartLine />
                                             </Link>
                                         </div>
                                     </div>

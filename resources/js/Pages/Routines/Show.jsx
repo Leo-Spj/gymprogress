@@ -3,7 +3,7 @@ import { Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
-import { FaDumbbell } from 'react-icons/fa';
+import { FaDumbbell, FaEdit, FaArrowLeft, FaChartLine, FaPlay } from 'react-icons/fa';
 
 const getTypeLabel = (type) => {
     const types = {
@@ -105,18 +105,20 @@ export default function Show({ auth, routine }) {
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-semibold">{routine.name}</h2>
-                                <div className="space-x-4">
+                                <div className="flex gap-3"> {/* Cambiado de space-x-4 a flex gap-3 */}
                                     <Link
                                         href={route('routines.edit', routine.id)}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                                        className="bg-blue-500 text-white w-10 h-10 rounded-md hover:bg-blue-600 inline-flex items-center justify-center" /* Añadido inline-flex */
+                                        title="Editar"
                                     >
-                                        Editar
+                                        <FaEdit className="text-lg" /> {/* Ajustado tamaño */}
                                     </Link>
                                     <Link
                                         href={route('routines.index')}
-                                        className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                                        className="bg-gray-500 text-white w-10 h-10 rounded-md hover:bg-gray-600 inline-flex items-center justify-center" /* Añadido inline-flex */
+                                        title="Volver"
                                     >
-                                        Volver
+                                        <FaArrowLeft className="text-lg" /> {/* Ajustado tamaño */}
                                     </Link>
                                 </div>
                             </div>
@@ -211,18 +213,20 @@ export default function Show({ auth, routine }) {
                                                                 <div className="grid grid-cols-2 gap-2">
                                                                     <Link
                                                                         href={route('trends.show', exercise.id)}
-                                                                        className="bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 text-center text-sm"
+                                                                        className="bg-blue-500 text-white py-2 px-3 rounded-md hover:bg-blue-600 text-center flex items-center justify-center"
+                                                                        title="Tendencias"
                                                                     >
-                                                                        Tendencias
+                                                                        <FaChartLine />
                                                                     </Link>
                                                                     <Link
                                                                         href={route('exercise.rest', { 
                                                                             exercise: exercise.id,
                                                                             routine_id: routine.id  // Asegurarse de que esto está presente
                                                                         })}
-                                                                        className="bg-green-500 text-white py-1.5 px-3 rounded-md hover:bg-green-600 text-center text-sm"
+                                                                        className="bg-green-500 text-white py-2 px-3 rounded-md hover:bg-green-600 text-center flex items-center justify-center"
+                                                                        title="Entrenar"
                                                                     >
-                                                                        Entrenar
+                                                                        <FaPlay />
                                                                     </Link>
                                                                 </div>
                                                             </div>

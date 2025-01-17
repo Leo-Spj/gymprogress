@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { FaPlus, FaEdit, FaPlay } from 'react-icons/fa';
 
 export default function Index({ auth, routines }) {
     const { delete: destroy, post } = useForm();
@@ -47,9 +48,10 @@ export default function Index({ auth, routines }) {
                                 <div className="space-x-4">
                                     <Link
                                         href={route('routines.create')}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                        className="bg-blue-500 text-white w-10 h-10 rounded-md hover:bg-blue-600 flex items-center justify-center" // Ajustado
+                                        title="Nueva Rutina"
                                     >
-                                        Nueva Rutina
+                                        <FaPlus className="text-xl" /> {/* Ajustado tamaño del ícono */}
                                     </Link>
                                 </div>
                             </div>
@@ -59,9 +61,10 @@ export default function Index({ auth, routines }) {
                                     <div key={routine.id} className="bg-white p-3 rounded-lg shadow-sm relative">
                                         <Link
                                             href={route('routines.edit', routine.id)}
-                                            className="absolute top-3 right-3 bg-blue-500 text-white px-2 py-1 rounded-md text-sm hover:bg-blue-600"
+                                            className="absolute top-3 right-3 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+                                            title="Editar"
                                         >
-                                            Editar
+                                            <FaEdit />
                                         </Link>
                                         <div className="mb-3">
                                             <h3 className="text-lg font-medium mb-2">{routine.name}</h3>
@@ -87,9 +90,10 @@ export default function Index({ auth, routines }) {
                                         </div>
                                         <button
                                             onClick={() => handleTrain(routine.id)}
-                                            className="bg-green-500 text-white py-1.5 px-3 rounded-md w-full hover:bg-green-600 text-sm"
+                                            className="bg-green-500 text-white py-2 px-3 rounded-md w-full hover:bg-green-600 flex items-center justify-center"
+                                            title="Entrenar"
                                         >
-                                            Entrenar
+                                            <FaPlay />
                                         </button>
                                     </div>
                                 ))}
