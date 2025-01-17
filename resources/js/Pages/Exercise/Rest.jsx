@@ -167,7 +167,7 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
         <AuthenticatedLayout user={auth.user}>
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="flex justify-end mb-4">
+                    <div className="flex justify-center mb-4">
                         {routineId && (
                             <Link
                                 href={route('routines.show', routineId)}
