@@ -1,7 +1,7 @@
 {
     "name": "GymProgress",
     "short_name": "GymProgress",
-    "start_url": "/",
+    "start_url": "/rutinas",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#f3f4f6",
