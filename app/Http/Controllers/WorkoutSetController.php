@@ -22,6 +22,11 @@ class WorkoutSetController extends Controller
             'duration_seconds' => 'integer|min:0',
         ]);
 
+        // Establecer valor por defecto para duration_seconds
+        if (!isset($validated['duration_seconds'])) {
+            $validated['duration_seconds'] = 30;
+        }
+
         $set = $workout->sets()->create($validated);
         return response()->json($set, 201);
     }

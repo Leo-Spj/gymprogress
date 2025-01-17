@@ -56,17 +56,17 @@ class WorkoutController extends Controller
         return response()->json(null, 204);
     }
 
-    public function getOrCreate()
+    public function getOrCreate(Request $request)
     {
         $user = auth()->user();
-        $today = now()->toDateString();
+        $date = $request->input('date') ? date('Y-m-d', strtotime($request->input('date'))) : now()->toDateString();
 
         $workout = $user->workouts()
-            ->whereDate('workout_date', $today)
+            ->whereDate('workout_date', $date)
             ->first();
 
         if (!$workout) {
-            $workout = $user->workouts()->create(['workout_date' => $today]);
+            $workout = $user->workouts()->create(['workout_date' => $date]);
         }
 
         return response()->json($workout);
