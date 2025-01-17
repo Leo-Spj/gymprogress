@@ -218,7 +218,7 @@ export default function Show({ auth, routine }) {
                                                                     <Link
                                                                         href={route('exercise.rest', { 
                                                                             exercise: exercise.id,
-                                                                            routine_id: routine.id 
+                                                                            routine_id: routine.id  // Asegurarse de que esto está presente
                                                                         })}
                                                                         className="bg-green-500 text-white py-1.5 px-3 rounded-md hover:bg-green-600 text-center text-sm"
                                                                     >

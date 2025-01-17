@@ -50,7 +50,7 @@ class ExerciseExecutionController extends Controller
         return response()->json($set->fresh());
     }
 
-    public function rest(Exercise $exercise)
+    public function rest(Exercise $exercise, Request $request)
     {
         $latestWorkout = Workout::where('user_id', auth()->id())
             ->orderBy('workout_date', 'desc')
@@ -69,7 +69,8 @@ class ExerciseExecutionController extends Controller
             'trendsData' => [
                 'workout_date' => $latestWorkout?->workout_date,
                 'sets' => $latestSets
-            ]
+            ],
+            'routineId' => $request->query('routine_id') // Obtener el routine_id de la query
         ]);
     }
 }
