@@ -14,9 +14,20 @@ class RoutineController extends Controller
 
     public function index()
     {
+        $currentDay = strtolower(date('l')); // Obtiene el día actual en inglés y en minúsculas
+        
         $routines = auth()->user()->routines()
             ->with(['exercises', 'routineDays'])
-            ->get();
+            ->get()
+            ->sort(function ($a, $b) use ($currentDay) {
+                $aHasCurrentDay = $a->routineDays->contains('day_of_week', ucfirst($currentDay));
+                $bHasCurrentDay = $b->routineDays->contains('day_of_week', ucfirst($currentDay));
+                
+                if ($aHasCurrentDay && !$bHasCurrentDay) return -1;
+                if (!$aHasCurrentDay && $bHasCurrentDay) return 1;
+                return 0;
+            })->values();
+
         return Inertia::render('Routines/Index', [
             'routines' => $routines
         ]);
