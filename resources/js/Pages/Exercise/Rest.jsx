@@ -20,9 +20,17 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
         duration_seconds: 0
     });
     const [audio] = useState(new Audio('/sounds/beep.mp3')); // Cambia a tu archivo local
-    const [trendsData, setTrendsData] = useState(initialTrendsData);
     const [editingSet, setEditingSet] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
+
+    // Modificar el estado inicial para manejar los datos del último workout
+    const [workoutData, setWorkoutData] = useState({
+        date: initialTrendsData?.workout_date || null,
+        sets: initialTrendsData?.sets || []
+    });
+
+    const hasWorkoutSets = workoutData.sets && workoutData.sets.length > 0;
+    const workoutDate = workoutData.date ? new Date(workoutData.date).toLocaleDateString() : 'Hoy';
 
     useEffect(() => {
         // Precarga el audio
@@ -90,15 +98,18 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
                 workout_id: workoutId
             });
 
-            // Agregar el nuevo set al inicio de trendsData
             const newSet = {
                 id: response.data.id,
                 weight: parseFloat(formData.weight),
                 reps: parseInt(formData.reps),
-                date: new Date().toISOString()
+                created_at: new Date().toISOString()
             };
 
-            setTrendsData([newSet, ...trendsData]);
+            setWorkoutData(prev => ({
+                ...prev,
+                sets: [...prev.sets, newSet]
+            }));
+
             setFormData({ weight: '', reps: '', duration_seconds: 0 });
             setShowModal(false);
         } catch (error) {
@@ -133,15 +144,12 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
             const response = await axios.put(`/workout-sets/${editingSet.id}`, updatedSet);
 
             if (response.data) {
-                // Mantener la fecha original al actualizar el estado
-                const updatedData = {
-                    ...response.data,
-                    date: editingSet.date
-                };
-                
-                setTrendsData(trendsData.map(set => 
-                    set.id === editingSet.id ? updatedData : set
-                ));
+                setWorkoutData(prev => ({
+                    ...prev,
+                    sets: prev.sets.map(set => 
+                        set.id === editingSet.id ? response.data : set
+                    )
+                }));
                 setShowEditModal(false);
             }
         } catch (error) {
@@ -153,11 +161,13 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
     const handleDelete = async (setId) => {
         if (confirm('¿Estás seguro de que deseas eliminar este set?')) {
             try {
-                // Usar la URL directa en lugar de route()
                 await axios.delete(`/workout-sets/${setId}`);
-                setTrendsData(trendsData.filter(set => set.id !== setId));
+                setWorkoutData(prev => ({
+                    ...prev,
+                    sets: prev.sets.filter(set => set.id !== setId)
+                }));
             } catch (error) {
-                console.error('Error al eliminar el set:', error.response?.data || error);
+                console.error('Error al eliminar el set:', error);
                 alert('Error al eliminar el set: ' + (error.response?.data?.message || 'Error desconocido'));
             }
         }
@@ -290,13 +300,17 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
                     {/* Nueva sección para la tabla */}
                     <div className="bg-white overflow-hidden shadow-sm rounded-lg mt-6">
                         <div className="p-6">
-                            <h2 className="text-2xl font-semibold mb-4">Historial de Sets</h2>
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-2xl font-semibold">
+                                    Sets del entrenamiento ({workoutDate})
+                                </h2>
+                            </div>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Fecha
+                                                Set #
                                             </th>
                                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Peso (kg)
@@ -310,10 +324,10 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {trendsData && trendsData.map((set, index) => (
+                                        {workoutData.sets.map((set, index) => (
                                             <tr key={set.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {new Date(set.date).toLocaleDateString()}
+                                                    {index + 1}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     {set.weight}
@@ -340,10 +354,10 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
                                                 </td>
                                             </tr>
                                         ))}
-                                        {(!trendsData || trendsData.length === 0) && (
+                                        {!hasWorkoutSets && (
                                             <tr>
-                                                <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-500">
-                                                    No hay registros disponibles
+                                                <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                                                    No hay sets registrados para este entrenamiento
                                                 </td>
                                             </tr>
                                         )}

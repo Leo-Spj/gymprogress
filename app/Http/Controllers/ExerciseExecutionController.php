@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Exercise;
 use App\Models\Workout;
+use App\Models\WorkoutSet; // Añadir esta línea
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -49,31 +50,26 @@ class ExerciseExecutionController extends Controller
         return response()->json($set->fresh());
     }
 
-    public function rest(Exercise $exercise, Request $request)
+    public function rest(Exercise $exercise)
     {
-        $this->authorize('view', $exercise);
-        $routineId = $request->query('routine_id');
-        
-        $trendsData = DB::table('workout_sets')
-            ->join('workouts', 'workouts.id', '=', 'workout_sets.workout_id')
-            ->where('exercise_id', $exercise->id)
-            ->where('workouts.user_id', auth()->id())
-            ->select(
-                'workout_sets.id',
-                'workout_sets.reps',
-                'workout_sets.weight',
-                'workouts.workout_date as date'
-            )
-            ->orderBy('workouts.workout_date', 'desc')
-            ->orderBy('workout_sets.id', 'desc')
-            ->limit(50)
-            ->get();
+        $latestWorkout = Workout::where('user_id', auth()->id())
+            ->orderBy('workout_date', 'desc')
+            ->first();
+
+        $latestSets = [];
+        if ($latestWorkout) {
+            $latestSets = WorkoutSet::where('workout_id', $latestWorkout->id)
+                ->where('exercise_id', $exercise->id)
+                ->orderBy('created_at', 'asc')
+                ->get();
+        }
 
         return Inertia::render('Exercise/Rest', [
             'exercise' => $exercise,
-            'restConfig' => auth()->user()->restConfig,
-            'trendsData' => $trendsData,
-            'routineId' => $routineId
+            'trendsData' => [
+                'workout_date' => $latestWorkout?->workout_date,
+                'sets' => $latestSets
+            ]
         ]);
     }
 }

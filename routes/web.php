@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/ejercicios/{exercise}/edit', [ExerciseController::class, 'edit'])->name('exercises.edit');
     Route::put('/ejercicios/{exercise}', [ExerciseController::class, 'update'])->name('exercises.update');
     Route::delete('/ejercicios/{exercise}', [ExerciseController::class, 'destroy'])->name('exercises.destroy');
+    Route::get('/exercises/{exercise}/latest-sets', [ExerciseController::class, 'getLatestWorkoutSets'])
+        ->name('exercise.latest-sets');
 
     // Rutas para seguimiento de ejercicios
     Route::get('/seguimiento', [WorkoutController::class, 'index'])->name('tracking.index');

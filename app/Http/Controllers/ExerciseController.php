@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exercise;
+use App\Models\Workout;
+use App\Models\WorkoutSet; // Añadir esta línea
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Inertia\Inertia;
@@ -118,5 +120,26 @@ class ExerciseController extends Controller
         
         $exercise->delete();
         return response()->json(null, 204);
+    }
+
+    public function getLatestWorkoutSets($exerciseId)
+    {
+        $latestWorkout = Workout::where('user_id', auth()->id())
+            ->orderBy('workout_date', 'desc')
+            ->first();
+
+        if (!$latestWorkout) {
+            return response()->json([]);
+        }
+
+        $sets = WorkoutSet::where('workout_id', $latestWorkout->id)
+            ->where('exercise_id', $exerciseId)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json([
+            'workout_date' => $latestWorkout->workout_date,
+            'sets' => $sets
+        ]);
     }
 }
