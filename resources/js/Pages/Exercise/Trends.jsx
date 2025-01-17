@@ -11,6 +11,8 @@ import dayjs from 'dayjs';
 export default function Trends({ auth, exercise, trendsData: initialTrendsData }) {
     const [trendsData, setTrendsData] = React.useState(initialTrendsData);
     const [showModal, setShowModal] = React.useState(false);
+    const [editingSet, setEditingSet] = React.useState(null);
+    const [showEditModal, setShowEditModal] = React.useState(false);
     const [formData, setFormData] = React.useState({
         weight: '',
         reps: '',
@@ -154,6 +156,44 @@ export default function Trends({ auth, exercise, trendsData: initialTrendsData }
         }
     };
 
+    const handleEdit = async (e) => {
+        e.preventDefault();
+        try {
+            const updatedSet = {
+                ...editingSet,
+                reps: parseInt(editingSet.reps),
+                weight: parseFloat(editingSet.weight),
+                duration_seconds: parseInt(editingSet.duration_seconds || 0)
+            };
+
+            const response = await axios.put(`/workout-sets/${editingSet.id}`, updatedSet);
+
+            if (response.data) {
+                setTrendsData(prevData => 
+                    prevData.map(set => 
+                        set.id === editingSet.id ? { ...response.data, date: editingSet.date } : set
+                    )
+                );
+                setShowEditModal(false);
+            }
+        } catch (error) {
+            console.error('Error al actualizar el set:', error);
+            alert('Error al actualizar el set: ' + (error.response?.data?.message || 'Error desconocido'));
+        }
+    };
+
+    const handleDelete = async (setId) => {
+        if (confirm('¿Estás seguro de que deseas eliminar este set?')) {
+            try {
+                await axios.delete(`/workout-sets/${setId}`);
+                setTrendsData(prevData => prevData.filter(set => set.id !== setId));
+            } catch (error) {
+                console.error('Error al eliminar el set:', error);
+                alert('Error al eliminar el set: ' + (error.response?.data?.message || 'Error desconocido'));
+            }
+        }
+    };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="py-12">
@@ -215,7 +255,7 @@ export default function Trends({ auth, exercise, trendsData: initialTrendsData }
                     <div className="bg-white overflow-hidden shadow-sm rounded-lg mt-6">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-2xl font-semibold">Historial de Sets</h2>
+                                <h2 className="text-2xl font-semibold">🗓️ Sets</h2>
                                 <button
                                     onClick={() => setShowWorkoutModal(true)}
                                     className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
@@ -236,10 +276,15 @@ export default function Trends({ auth, exercise, trendsData: initialTrendsData }
                                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Reps
                                             </th>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Acciones
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {trendsData && trendsData.map((set, index) => (
+                                        {trendsData && [...trendsData].sort((a, b) => 
+                                            new Date(b.date) - new Date(a.date)
+                                        ).map((set, index) => (
                                             <tr key={set.id || index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     {new Date(set.date).toLocaleDateString()}
@@ -250,11 +295,28 @@ export default function Trends({ auth, exercise, trendsData: initialTrendsData }
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     {set.reps}
                                                 </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditingSet(set);
+                                                            setShowEditModal(true);
+                                                        }}
+                                                        className="text-blue-600 hover:text-blue-900 mr-3"
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(set.id)}
+                                                        className="text-red-600 hover:text-red-900"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                         {!hasData && (
                                             <tr>
-                                                <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-500">
+                                                <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
                                                     No hay registros disponibles
                                                 </td>
                                             </tr>
@@ -264,6 +326,59 @@ export default function Trends({ auth, exercise, trendsData: initialTrendsData }
                             </div>
                         </div>
                     </div>
+
+                    {/* Modal de edición */}
+                    {showEditModal && editingSet && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                                <h3 className="text-lg font-semibold mb-4">Editar Set</h3>
+                                <form onSubmit={handleEdit}>
+                                    <div className="mb-4">
+                                        <label className="block text-gray-700 mb-2">Peso</label>
+                                        <input
+                                            type="number"
+                                            step="0.5"
+                                            className="w-full p-2 border rounded"
+                                            value={editingSet.weight}
+                                            onChange={(e) => setEditingSet({
+                                                ...editingSet,
+                                                weight: e.target.value
+                                            })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block text-gray-700 mb-2">Repeticiones</label>
+                                        <input
+                                            type="number"
+                                            className="w-full p-2 border rounded"
+                                            value={editingSet.reps}
+                                            onChange={(e) => setEditingSet({
+                                                ...editingSet,
+                                                reps: e.target.value
+                                            })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="flex justify-end space-x-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowEditModal(false)}
+                                            className="px-4 py-2 bg-gray-300 rounded"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="px-4 py-2 bg-blue-500 text-white rounded"
+                                        >
+                                            Actualizar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Modal de nuevo registro */}
                     {showWorkoutModal && (
