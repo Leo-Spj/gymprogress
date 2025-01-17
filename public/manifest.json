@@ -11,5 +11,8 @@
             "sizes": "512x512",
             "type": "image/png"
         }
-    ]
+    ],
+    "scope": "/",
+    "orientation": "portrait",
+    "description": "Una aplicación para seguir tu progreso en el gimnasio."
 }
