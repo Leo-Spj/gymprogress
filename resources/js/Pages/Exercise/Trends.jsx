@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { Link } from '@inertiajs/react'; // Añadir esta importación
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { FaChartLine, FaArrowLeft, FaPlus } from 'react-icons/fa'; // Añadido FaArrowLeft
 import Typography from '@mui/material/Typography';
 import { LineChart } from '@mui/x-charts/LineChart';
 import axios from 'axios';
@@ -197,70 +199,90 @@ export default function Trends({ auth, exercise, trendsData: initialTrendsData }
     return (
         <AuthenticatedLayout user={auth.user}>
             <div className="py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm rounded-lg p-4 sm:p-6">
-                        <Typography variant="h5" className="mb-4">
-                            Progreso - {exercise.name}
-                        </Typography>
-
-                        {chartData && (
-                            <>
-                                <div className="w-full overflow-x-auto">
-                                    <LineChart
-                                        xAxis={[{
-                                            data: chartData.dates,
-                                            scaleType: 'point',
-                                            tickLabelStyle: {
-                                                angle: 45,
-                                                textAnchor: 'start',
-                                                fontSize: 11
-                                            }
-                                        }]}
-                                        series={chartData.series}
-                                        height={300}
-                                        margin={{
-                                            left: 50,
-                                            right: 20,
-                                            top: 20,
-                                            bottom: 65
-                                        }}
-                                        sx={{
-                                            '.MuiLineElement-root': {
-                                                strokeWidth: 2,
-                                            },
-                                            '.MuiMarkElement-root': {
-                                                strokeWidth: 2,
-                                                fill: '#fff',
-                                            }
-                                        }}
-                                        slotProps={{
-                                            legend: { hidden: true }
-                                        }}
-                                    />
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8"> {/* Eliminado el px-4 aquí */}
+                    {/* Header con botones de acción */}
+                    <div className="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-2xl font-semibold">{exercise.name}</h2>
+                                <div className="flex gap-3">
+                                    <Link
+                                        href={route('routines.index')}
+                                        className="bg-gray-500 text-white w-10 h-10 rounded-md hover:bg-gray-600 inline-flex items-center justify-center"
+                                        title="Volver"
+                                    >
+                                        <FaArrowLeft className="text-lg" />
+                                    </Link>
                                 </div>
-                                <Typography variant="caption" className="mt-2 block text-center text-gray-600">
-                                    R = Repeticiones, P = Peso • Últimos {chartData.dates.length} entrenamientos
-                                </Typography>
-                            </>
-                        )}
-
-                        {!hasData && (
-                            <Typography variant="body1" className="text-center py-4">
-                                No hay datos disponibles
-                            </Typography>
-                        )}
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Nueva sección para la tabla */}
-                    <div className="bg-white overflow-hidden shadow-sm rounded-lg mt-6">
+                    {/* Gráfico */}
+                    <div className="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-2xl font-semibold">🗓️ Sets</h2>
+                                <h3 className="text-lg font-medium">📊 Gráfico de Progreso</h3>
+                            </div>
+                            {chartData && (
+                                <>
+                                    <div className="w-full overflow-x-auto">
+                                        <LineChart
+                                            xAxis={[{
+                                                data: chartData.dates,
+                                                scaleType: 'point',
+                                                tickLabelStyle: {
+                                                    angle: 45,
+                                                    textAnchor: 'start',
+                                                    fontSize: 11
+                                                }
+                                            }]}
+                                            series={chartData.series}
+                                            height={300}
+                                            margin={{
+                                                left: 50,
+                                                right: 20,
+                                                top: 20,
+                                                bottom: 65
+                                            }}
+                                            sx={{
+                                                '.MuiLineElement-root': {
+                                                    strokeWidth: 2,
+                                                },
+                                                '.MuiMarkElement-root': {
+                                                    strokeWidth: 2,
+                                                    fill: '#fff',
+                                                }
+                                            }}
+                                            slotProps={{
+                                                legend: { hidden: true }
+                                            }}
+                                        />
+                                    </div>
+                                    <Typography variant="caption" className="mt-2 block text-center text-gray-600">
+                                        R = Repeticiones, P = Peso • Últimos {chartData.dates.length} entrenamientos
+                                    </Typography>
+                                </>
+                            )}
+                            {!hasData && (
+                                <Typography variant="body1" className="text-center py-4">
+                                    No hay datos disponibles
+                                </Typography>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Tabla de Sets */}
+                    <div className="bg-white overflow-hidden shadow-sm rounded-lg">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-medium">🗓️ Historial de Sets</h3>
                                 <button
                                     onClick={() => setShowWorkoutModal(true)}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                    className="bg-blue-500 text-white w-10 h-10 rounded-md hover:bg-blue-600 inline-flex items-center justify-center"
+                                    title="Agregar Registro"
                                 >
-                                    Agregar Registro
+                                    <FaPlus className="text-lg" />
                                 </button>
                             </div>
                             <div className="overflow-x-auto">
