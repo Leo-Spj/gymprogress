@@ -189,7 +189,8 @@ export default function Rest({ auth, exercise, trendsData: initialTrendsData, ro
                     </div>
                     <div className="bg-white overflow-hidden shadow-sm rounded-lg">
                         <div className="p-6">
-                            <h2 className="text-2xl font-semibold mb-4">Tiempo de Descanso</h2>
+                            <h2 className="text-2xl font-semibold mb-4">{exercise.name}</h2>
+                            <h3 className="text-xl font-medium mb-4">Tiempo de Descanso</h3>
                             <div className="text-center">
                                 {showSelector ? (
                                     <>
