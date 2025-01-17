@@ -7,7 +7,7 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import axios from 'axios';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker, DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimePicker, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 export default function Trends({ auth, exercise, trendsData: initialTrendsData }) {
