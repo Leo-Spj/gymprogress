@@ -76,8 +76,7 @@ class ExerciseController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|array', // Cambiado de string a array
-            'type.*' => 'string|max:255', // Validación para cada elemento del array
+            'type' => 'required',
             'image_url' => 'nullable|url|max:2083',
             'image' => 'nullable|image|max:5120',
         ]);
@@ -85,8 +84,9 @@ class ExerciseController extends Controller
         try {
             \DB::beginTransaction();
 
+            // Procesar imagen si se proporcionó una nueva
             if ($request->hasFile('image')) {
-                // Eliminar imagen anterior si existe
+                // Eliminar imagen anterior
                 if ($exercise->image_path) {
                     Storage::disk('public')->delete($exercise->image_path);
                 }
@@ -95,18 +95,22 @@ class ExerciseController extends Controller
                 $exercise->image_path = $path;
             }
 
+            // Actualizar otros campos
             $exercise->name = $validated['name'];
-            $exercise->type = $validated['type']; // Ahora acepta array
+            $exercise->type = json_decode($validated['type']);
             $exercise->image_url = $validated['image_url'] ?? null;
             
             $exercise->save();
 
             \DB::commit();
-            return redirect()->route('exercises.index');
+            
+            return redirect()->route('exercises.index')
+                            ->with('success', 'Ejercicio actualizado correctamente');
 
         } catch (\Exception $e) {
             \DB::rollBack();
-            return back()->withErrors(['error' => 'Error al actualizar el ejercicio: ' . $e->getMessage()]);
+            \Log::error('Error actualizando ejercicio: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Error al actualizar el ejercicio']);
         }
     }
 

@@ -18,73 +18,12 @@ export default function Edit({ auth, exercise, existingTypes }) {
         image: null
     });
 
-    const handleImageChange = async (e) => {
+    const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        try {
-            // Crear preview
-            setPreviewUrl(URL.createObjectURL(file));
-
-            // Optimizar imagen
-            const optimizedImage = await optimizeImage(file);
-            console.log('Tamaño original:', file.size, 'bytes');
-            console.log('Tamaño optimizado:', optimizedImage.size, 'bytes');
-            
-            setData('image', optimizedImage);
-        } catch (error) {
-            console.error('Error al optimizar la imagen:', error);
-        }
-    };
-
-    const optimizeImage = async (file) => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    // Crear un canvas para redimensionar
-                    const canvas = document.createElement('canvas');
-                    // Establecer dimensiones máximas
-                    const MAX_WIDTH = 400*0.55;
-                    const MAX_HEIGHT = 300*0.55;
-                    
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    // Calcular nuevas dimensiones manteniendo proporción
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Convertir a WebP con baja calidad
-                    canvas.toBlob((blob) => {
-                        // Crear nuevo archivo con el blob optimizado
-                        const optimizedFile = new File([blob], file.name, {
-                            type: 'image/webp',
-                            lastModified: Date.now()
-                        });
-                        resolve(optimizedFile);
-                    }, 'image/webp', 0.1); // 0.1 = 10% de calidad
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
+        setPreviewUrl(URL.createObjectURL(file));
+        setData('image', file); // Simplificamos esto - no optimizamos la imagen
     };
 
     const handleTypeChange = (e) => {
@@ -140,24 +79,21 @@ export default function Edit({ auth, exercise, existingTypes }) {
         const formData = new FormData();
         formData.append('_method', 'PUT');
         formData.append('name', data.name);
-        formData.append('type', data.type);
+        formData.append('type', JSON.stringify(selectedTypes)); // Usamos selectedTypes directamente
         
-        // Solo agregar image_url si tiene un valor
         if (data.image_url) {
             formData.append('image_url', data.image_url);
         }
         
-        // Verificar si hay una nueva imagen seleccionada
-        const fileInput = imageInputRef.current;
-        if (fileInput && fileInput.files[0]) {
-            formData.append('image', fileInput.files[0]);
+        if (data.image) {
+            formData.append('image', data.image);
         }
 
         router.post(route('exercises.update', exercise.id), formData, {
             forceFormData: true,
-            preserveScroll: true,
+            preserveState: true,
             onSuccess: () => {
-                console.log('Ejercicio actualizado con éxito');
+                router.visit(route('exercises.index')); // Forzamos la redirección
             },
             onError: (errors) => {
                 console.error('Error al actualizar:', errors);
