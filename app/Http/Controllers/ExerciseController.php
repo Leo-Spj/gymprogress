@@ -118,12 +118,33 @@ class ExerciseController extends Controller
     {
         $this->authorize('delete', $exercise);
         
-        if ($exercise->image_path) {
-            Storage::disk('public')->delete($exercise->image_path);
+        try {
+            \DB::beginTransaction();
+            
+            // Eliminar la imagen si existe
+            if ($exercise->image_path) {
+                \Log::info('Eliminando imagen: ' . $exercise->image_path);
+                if (Storage::disk('public')->exists($exercise->image_path)) {
+                    Storage::disk('public')->delete($exercise->image_path);
+                    \Log::info('Imagen eliminada con éxito');
+                } else {
+                    \Log::warning('Imagen no encontrada en el servidor: ' . $exercise->image_path);
+                }
+            }
+            
+            // Eliminar el ejercicio
+            $exercise->delete();
+            
+            \DB::commit();
+            \Log::info('Ejercicio eliminado con éxito: ' . $exercise->id);
+            
+            return redirect()->route('exercises.index')
+                            ->with('success', 'Ejercicio eliminado correctamente');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error al eliminar ejercicio: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Error al eliminar el ejercicio']);
         }
-        
-        $exercise->delete();
-        return response()->json(null, 204);
     }
 
     public function getLatestWorkoutSets($exerciseId)

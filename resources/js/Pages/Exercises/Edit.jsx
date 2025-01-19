@@ -103,8 +103,10 @@ export default function Edit({ auth, exercise, existingTypes }) {
 
     const handleDelete = () => {
         if (confirm('¿Estás seguro de que quieres eliminar este ejercicio?')) {
-            destroy(route('exercises.destroy', exercise.id), {
-                onSuccess: () => router.visit(route('exercises.index'))
+            router.delete(route('exercises.destroy', exercise.id), {
+                onSuccess: () => {
+                    router.visit(route('exercises.index'));
+                },
             });
         }
     };
