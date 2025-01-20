@@ -21,6 +21,7 @@ services:
       - DB_HOST=db
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
+      - APP_URL=${APP_URL}
 
   db:
     image: mysql:8.0

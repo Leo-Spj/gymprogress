@@ -13,17 +13,16 @@ fi
 # Construir assets
 npm run build
 
-# Esperar a que MySQL esté disponible
-until nc -z -v -w30 db 3306
+# Esperar a que MySQL esté disponible y ejecutar migraciones
+echo "Verificando conexión con MySQL..."
+until php artisan db:monitor
 do
     echo "Esperando a MySQL..."
     sleep 2
 done
 
 echo "MySQL está disponible, ejecutando migraciones..."
-
-# Ejecutar migraciones
-php artisan migrate --force
+php artisan migrate --force 
 
 # Limpiar caché
 php artisan config:clear
