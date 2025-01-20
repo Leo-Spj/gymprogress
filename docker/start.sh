@@ -1,11 +1,33 @@
 #!/bin/bash
 
+# Instalar dependencias de npm si no existen
+if [ ! -d "node_modules" ]; then
+    npm install
+fi
+
+# Construir assets
+npm run build
+
 # Esperar a que MySQL esté disponible
-until php artisan migrate --force
+until nc -z -v -w30 db 3306
 do
     echo "Esperando a MySQL..."
-    sleep 1
+    sleep 2
 done
 
-# Iniciar PHP-FPM
-php-fpm
+echo "MySQL está disponible, ejecutando migraciones..."
+
+# Ejecutar migraciones
+php artisan migrate --force
+
+# Limpiar caché
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+
+# Establecer permisos
+chown -R www-data:www-data /var/www/html/storage
+chmod -R 775 /var/www/html/storage
+
+# Iniciar PHP-FPM en primer plano
+php-fpm -F
