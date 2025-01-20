@@ -49,21 +49,21 @@ export default function Welcome({ auth }) {
                                 <FaDumbbell className="text-blue-500 text-4xl mb-4"/>
                                 <h3 className="text-xl font-semibold mb-2">Rutinas</h3>
                                 <p className="text-gray-600 text-center">
-                                    Crea y personaliza tus rutinas de entrenamiento para maximizar tus resultados.
+                                    Crea y personaliza tus rutinas de entrenamiento.
                                 </p>
                             </div>
                             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-                                <FaChartLine className="text-teal-500 text-4xl mb-4"/>
+                                <FaRegCalendarCheck className="text-indigo-500 text-4xl mb-4"/>
                                 <h3 className="text-xl font-semibold mb-2">Seguimiento</h3>
                                 <p className="text-gray-600 text-center">
                                     Registra tus series, pesos y repeticiones para un seguimiento detallado.
                                 </p>
                             </div>
                             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-                                <FaRegCalendarCheck className="text-indigo-500 text-4xl mb-4"/>
+                                <FaChartLine className="text-teal-500 text-4xl mb-4"/>
                                 <h3 className="text-xl font-semibold mb-2">Progreso</h3>
                                 <p className="text-gray-600 text-center">
-                                    Visualiza tu evolución a lo largo del tiempo con gráficos intuitivos.
+                                    Visualiza tu evolución a lo largo del tiempo mediante gráficos.
                                 </p>
                             </div>
                         </div>
