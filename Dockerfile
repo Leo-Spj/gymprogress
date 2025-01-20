@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
+    netcat \
     netcat-traditional
 
 # Instalar extensiones PHP
