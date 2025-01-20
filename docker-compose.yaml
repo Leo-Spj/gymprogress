@@ -8,7 +8,7 @@ services:
     container_name: laravel-app
     working_dir: /var/www/html
     ports:
-      - "80:80"
+      - "8000:8000"
     volumes:
       - .:/var/www/html
       - /var/www/html/node_modules
@@ -17,6 +17,7 @@ services:
     depends_on:
       - db
     environment:
+      - APP_KEY=${APP_KEY}
       - DB_HOST=db
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}

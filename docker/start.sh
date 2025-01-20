@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Generar clave de aplicación si no existe
+if [ -z "$APP_KEY" ]; then
+    php artisan key:generate
+fi
+
 # Instalar dependencias de npm si no existen
 if [ ! -d "node_modules" ]; then
     npm install
@@ -29,5 +34,8 @@ php artisan route:clear
 chown -R www-data:www-data /var/www/html/storage
 chmod -R 775 /var/www/html/storage
 
+# Crear enlace simbólico para el almacenamiento
+php artisan storage:link
+
 # Iniciar servidor de desarrollo de Laravel
-php artisan serve --host=0.0.0.0 --port=80
+php artisan serve --host=0.0.0.0 --port=8000
