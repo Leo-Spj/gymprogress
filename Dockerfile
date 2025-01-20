@@ -48,7 +48,7 @@ RUN chown -R www-data:www-data . && \
 COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-# Exponer puerto 9000
-EXPOSE 9000
+# Cambiar puerto expuesto de 9000 a 80
+EXPOSE 80
 
 CMD ["/usr/local/bin/start.sh"]

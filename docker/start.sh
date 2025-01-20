@@ -29,5 +29,5 @@ php artisan route:clear
 chown -R www-data:www-data /var/www/html/storage
 chmod -R 775 /var/www/html/storage
 
-# Iniciar PHP-FPM en primer plano
-php-fpm -F
+# Iniciar servidor de desarrollo de Laravel
+php artisan serve --host=0.0.0.0 --port=80
