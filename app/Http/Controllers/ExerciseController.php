@@ -76,7 +76,8 @@ class ExerciseController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required',
+            'type' => 'required|array', // Cambiado de string a array
+            'type.*' => 'string|max:255', // Validación para cada elemento del array
             'image_url' => 'nullable|url|max:2083',
             'image' => 'nullable|image|max:5120',
         ]);
@@ -84,9 +85,8 @@ class ExerciseController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Procesar imagen si se proporcionó una nueva
             if ($request->hasFile('image')) {
-                // Eliminar imagen anterior
+                // Eliminar imagen anterior si existe
                 if ($exercise->image_path) {
                     Storage::disk('public')->delete($exercise->image_path);
                 }
@@ -95,22 +95,18 @@ class ExerciseController extends Controller
                 $exercise->image_path = $path;
             }
 
-            // Actualizar otros campos
             $exercise->name = $validated['name'];
-            $exercise->type = json_decode($validated['type']);
+            $exercise->type = $validated['type']; // Ahora acepta array
             $exercise->image_url = $validated['image_url'] ?? null;
             
             $exercise->save();
 
             \DB::commit();
-            
-            return redirect()->route('exercises.index')
-                            ->with('success', 'Ejercicio actualizado correctamente');
+            return redirect()->route('exercises.index');
 
         } catch (\Exception $e) {
             \DB::rollBack();
-            \Log::error('Error actualizando ejercicio: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Error al actualizar el ejercicio']);
+            return back()->withErrors(['error' => 'Error al actualizar el ejercicio: ' . $e->getMessage()]);
         }
     }
 
@@ -118,33 +114,12 @@ class ExerciseController extends Controller
     {
         $this->authorize('delete', $exercise);
         
-        try {
-            \DB::beginTransaction();
-            
-            // Eliminar la imagen si existe
-            if ($exercise->image_path) {
-                \Log::info('Eliminando imagen: ' . $exercise->image_path);
-                if (Storage::disk('public')->exists($exercise->image_path)) {
-                    Storage::disk('public')->delete($exercise->image_path);
-                    \Log::info('Imagen eliminada con éxito');
-                } else {
-                    \Log::warning('Imagen no encontrada en el servidor: ' . $exercise->image_path);
-                }
-            }
-            
-            // Eliminar el ejercicio
-            $exercise->delete();
-            
-            \DB::commit();
-            \Log::info('Ejercicio eliminado con éxito: ' . $exercise->id);
-            
-            return redirect()->route('exercises.index')
-                            ->with('success', 'Ejercicio eliminado correctamente');
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            \Log::error('Error al eliminar ejercicio: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Error al eliminar el ejercicio']);
+        if ($exercise->image_path) {
+            Storage::disk('public')->delete($exercise->image_path);
         }
+        
+        $exercise->delete();
+        return response()->json(null, 204);
     }
 
     public function getLatestWorkoutSets($exerciseId)

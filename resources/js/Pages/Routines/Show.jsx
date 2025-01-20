@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
 import { FaDumbbell, FaEdit, FaArrowLeft, FaChartLine, FaPlay } from 'react-icons/fa';
+import ImageModal from '@/Components/ImageModal';
 
 const getTypeLabel = (type) => {
     const types = {
@@ -62,6 +63,7 @@ const getCurrentDay = () => {
 
 export default function Show({ auth, routine }) {
     const [exercises, setExercises] = useState(routine.exercises);
+    const [selectedImage, setSelectedImage] = useState(null);
     const currentDay = getCurrentDay();
 
     const handleDragEnd = (result) => {
@@ -177,13 +179,15 @@ export default function Show({ auth, routine }) {
                                                                         <img 
                                                                             src={exercise.image_url} 
                                                                             alt={exercise.name}
-                                                                            className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
+                                                                            className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0 cursor-pointer"
+                                                                            onClick={() => setSelectedImage(exercise.image_url)}
                                                                         />
                                                                     ) : exercise.image_path ? (
                                                                         <img 
                                                                             src={`/storage/${exercise.image_path}`} 
                                                                             alt={exercise.name}
-                                                                            className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
+                                                                            className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0 cursor-pointer"
+                                                                            onClick={() => setSelectedImage(`/storage/${exercise.image_path}`)}
                                                                         />
                                                                     ) : (
                                                                         <div className="w-12 h-12 bg-gray-100 rounded-lg mr-3 flex-shrink-0 flex items-center justify-center">
@@ -241,6 +245,11 @@ export default function Show({ auth, routine }) {
                                 </DragDropContext>
                             </div>
 
+                            <ImageModal
+                                isOpen={!!selectedImage}
+                                onClose={() => setSelectedImage(null)}
+                                imageUrl={selectedImage}
+                            />
                             
                         </div>
                     </div>

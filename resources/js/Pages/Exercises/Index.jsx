@@ -2,9 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { Link } from '@inertiajs/react';
 import { FaDumbbell, FaPlus, FaEdit, FaChartLine } from 'react-icons/fa';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import ImageModal from '@/Components/ImageModal';
 
 export default function Index({ auth, exercises }) {
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const normalizeText = (text) => {
         return text
@@ -105,13 +107,15 @@ export default function Index({ auth, exercises }) {
                                                 <img 
                                                     src={exercise.image_url} 
                                                     alt={exercise.name}
-                                                    className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
+                                                    className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0 cursor-pointer"
+                                                    onClick={() => setSelectedImage(exercise.image_url)}
                                                 />
                                             ) : exercise.image_path ? (
                                                 <img 
                                                     src={`/storage/${exercise.image_path}`} 
                                                     alt={exercise.name}
-                                                    className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0"
+                                                    className="w-12 h-12 object-cover rounded-lg mr-3 flex-shrink-0 cursor-pointer"
+                                                    onClick={() => setSelectedImage(`/storage/${exercise.image_path}`)}
                                                 />
                                             ) : (
                                                 <div className="w-12 h-12 bg-gray-100 rounded-lg mr-3 flex-shrink-0 flex items-center justify-center">
@@ -161,6 +165,11 @@ export default function Index({ auth, exercises }) {
                     </div>
                 </div>
             </div>
+            <ImageModal
+                isOpen={!!selectedImage}
+                onClose={() => setSelectedImage(null)}
+                imageUrl={selectedImage}
+            />
         </AuthenticatedLayout>
     );
 }
