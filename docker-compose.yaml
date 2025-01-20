@@ -19,8 +19,8 @@ services:
     environment:
       - APP_KEY=${APP_KEY}
       - DB_HOST=db
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=laravel
       - APP_URL=${APP_URL}
 
   db:
@@ -29,8 +29,8 @@ services:
     environment:
       MYSQL_DATABASE: gymprogress
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: laravel
+      MYSQL_USER: laravel
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
