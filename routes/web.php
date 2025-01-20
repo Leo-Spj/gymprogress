@@ -4,9 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\RoutineController;
 use App\Http\Controllers\WorkoutController;
-use App\Http\Controllers\WorkoutSetController; // Añadir esta línea
+use App\Http\Controllers\WorkoutSetController;
 use App\Http\Controllers\RestConfigController;
 use App\Http\Controllers\ExerciseExecutionController;
+use App\Http\Controllers\DataExportImportController; // Añadir esta línea
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -78,6 +79,11 @@ Route::middleware('auth')->group(function () {
         Route::put('/workout-sets/{set}', 'update')->name('workout-sets.update');
         Route::delete('/workout-sets/{set}', 'destroy')->name('workout-sets.destroy');
     });
+
+    // Rutas para importación/exportación de datos
+    Route::get('/data-manager', [DataExportImportController::class, 'index'])->name('data.index');
+    Route::get('/data-export', [DataExportImportController::class, 'export'])->name('data.export');
+    Route::post('/data-import', [DataExportImportController::class, 'import'])->name('data.import');
 });
 
 require __DIR__.'/auth.php';
