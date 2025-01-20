@@ -76,8 +76,7 @@ class ExerciseController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|array', // Cambiado de string a array
-            'type.*' => 'string|max:255', // Validación para cada elemento del array
+            'type' => 'required|json', // Cambiado para aceptar JSON string
             'image_url' => 'nullable|url|max:2083',
             'image' => 'nullable|image|max:5120',
         ]);
@@ -96,7 +95,7 @@ class ExerciseController extends Controller
             }
 
             $exercise->name = $validated['name'];
-            $exercise->type = $validated['type']; // Ahora acepta array
+            $exercise->type = json_decode($validated['type']); // Decodificar el JSON
             $exercise->image_url = $validated['image_url'] ?? null;
             
             $exercise->save();

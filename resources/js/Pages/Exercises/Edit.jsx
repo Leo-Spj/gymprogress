@@ -79,7 +79,7 @@ export default function Edit({ auth, exercise, existingTypes }) {
         const formData = new FormData();
         formData.append('_method', 'PUT');
         formData.append('name', data.name);
-        formData.append('type', JSON.stringify(selectedTypes)); // Usamos selectedTypes directamente
+        formData.append('type', JSON.stringify(selectedTypes));
         
         if (data.image_url) {
             formData.append('image_url', data.image_url);
@@ -93,7 +93,7 @@ export default function Edit({ auth, exercise, existingTypes }) {
             forceFormData: true,
             preserveState: true,
             onSuccess: () => {
-                router.visit(route('exercises.index')); // Forzamos la redirección
+                router.visit(route('exercises.index'));
             },
             onError: (errors) => {
                 console.error('Error al actualizar:', errors);
