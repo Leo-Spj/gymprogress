@@ -118,7 +118,7 @@ class ExerciseController extends Controller
         }
         
         $exercise->delete();
-        return response()->json(null, 204);
+        return redirect()->route('exercises.index');
     }
 
     public function getLatestWorkoutSets($exerciseId)
