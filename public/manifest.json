@@ -1,7 +1,7 @@
 {
     "name": "GymProgress",
     "short_name": "GymProgress",
-    "start_url": "https://gymprogress-production.up.railway.app/rutinas",
+    "start_url": "http://192.168.18.148:8000/rutinas",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#f3f4f6",
