@@ -7,14 +7,27 @@ export default defineConfig({
         laravel({
             input: 'resources/js/app.jsx',
             refresh: true,
-            // Forzar HTTPS para los assets
             forcedScheme: 'https'
         }),
         react(),
     ],
-    // Asegurar que los assets se sirvan con las URLs correctas
     server: {
         https: true,
         host: 'gymprogress.loca.lt'
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom'],
+                    layout: ['./resources/js/Layouts/AuthenticatedLayout.jsx']
+                }
+            }
+        },
+        // Optimizar la carga de chunks
+        chunkSizeWarningLimit: 1000,
+        modulePreload: {
+            polyfill: true
+        }
     }
 });
